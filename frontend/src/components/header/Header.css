@@ -1,0 +1,185 @@
+/* Add this CSS to a new file named Header.css in the same directory */
+
+.header {
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 2rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 60px;
+  color: #333;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  background: #ffffff;
+}
+
+.logo img {
+  height: 100px;
+  width: auto;
+  vertical-align: middle;
+  position: relative;
+  top: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  background: #ffffff;
+}
+
+.nav-link {
+  color: #333;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  line-height: 1.5;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.5s ease;
+  border: none;
+  outline: none;
+}
+
+.nav-link:hover {
+  color: #007bff;
+  background-color: #f0f0f0;
+  border: none;
+  outline: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  background-color: #ffffff;
+}
+
+.mobile-menu-btn:hover {
+  background-color: #f8f8f8;
+}
+
+.mobile-menu-btn span {
+  width: 25px;
+  height: 2px;
+  background-color: #333;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    text-align: center;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.5s ease;
+    pointer-events: none;
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.services-container {
+  position: relative;
+}
+
+.services-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  text-align: left;
+  border: none;
+  width: 100%;
+}
+
+.shopping-cart-container {
+  position: relative;
+}
+
+.shopping-cart-icon {
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  transition: transform 0.5s ease;
+}
+
+.shopping-cart-icon:hover {
+  transform: scale(1.1);
+}
+
+.shopping-cart-dropdown {
+  z-index: 2000;
+  background-color: #ffffff;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+}

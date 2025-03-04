@@ -1,0 +1,38 @@
+.slides-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.slides-preview {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-nav-button {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 1rem;
+  transition: background-color 0.3s;
+}
+
+.slide-nav-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.slide-preview {
+  width: 100%;
+  padding: 1rem;
+}

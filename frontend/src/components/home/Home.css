@@ -1,0 +1,18 @@
+.home-container {
+  width: 100%;
+  max-width: 1400px; /* Added to match wider layout */
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.slide-content-section {
+  width: 100%;
+  position: relative;
+  overflow: visible; /* Changed from hidden if it exists, to ensure arrows are visible */
+}
+
+.h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}

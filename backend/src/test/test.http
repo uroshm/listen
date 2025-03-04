@@ -1,0 +1,18 @@
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "password123"
+}
+
+###
+GET http://localhost:8080/auth/user/userProfile
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQwMTQ2MTYwLCJleHAiOjE3NDAxNDc5NjB9.C977vK6RdhNuaIa7k9JXcaeaCA8B9nM3ZxVj_CAsA-E
+
+
+
+###
+GET http://localhost:8080/widgets/getAllWidgets
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQwMTQ2MTYwLCJleHAiOjE3NDAxNDc5NjB9.C977vK6RdhNuaIa7k9JXcaeaCA8B9nM3ZxVj_CAsA-E
+

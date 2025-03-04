@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  data:
+    build:
+      context: ./data
+      dockerfile: Dockerfile
+    ports:
+      - 6432:6432
+  backend:
+    depends_on:
+      - data
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+
+  frontend:
+    depends_on:
+      - backend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
