@@ -4,7 +4,7 @@ FROM postgres:latest
 # Set environment variables for PostgreSQL
 ENV POSTGRES_USER=widget_user
 ENV POSTGRES_PASSWORD=widget_password
-ENV POSTGRES_DB=widget_db
+ENV POSTGRES_DB=listen_db
 ENV POSTGRES_HOST_AUTH_METHOD=trust
 
 # Copy the initialization script to the Docker image
