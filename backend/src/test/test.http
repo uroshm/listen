@@ -8,11 +8,20 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/auth/user/userProfile
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQwMTQ2MTYwLCJleHAiOjE3NDAxNDc5NjB9.C977vK6RdhNuaIa7k9JXcaeaCA8B9nM3ZxVj_CAsA-E
-
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQxMjgyNDUxLCJleHAiOjE3NDEyODQyNTF9.x9KDfCohyWdARaL8t2j6SWMnCWIJXkdj_PWnS3AxocY
 
 ###
 GET http://localhost:8080/widgets/getAllWidgets
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQwMTQ2MTYwLCJleHAiOjE3NDAxNDc5NjB9.C977vK6RdhNuaIa7k9JXcaeaCA8B9nM3ZxVj_CAsA-E
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQxMjgyNDUxLCJleHAiOjE3NDEyODQyNTF9.x9KDfCohyWdARaL8t2j6SWMnCWIJXkdj_PWnS3AxocY
 
+###
+POST http://localhost:8080/listen/uploadAudio
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQxMjk2MzAwLCJleHAiOjE3NDEyOTgxMDB9.w4Ncoq3T9T6xFlQJi0Sv3Eb_yE2_hDIeh7zXt3ju5sY
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="./cowOverMoon.wav"
+Content-Type: audio/mpeg
+
+< ./cowOverMoon.wav
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

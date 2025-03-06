@@ -1,8 +1,11 @@
-package com.slp.auth;
+package com.listen.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Getter;
@@ -57,16 +61,13 @@ public class AuthController {
     record AuthResponse(String token) {
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login")
     @CrossOrigin("http://localhost:5173")
-    public AuthResponse authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        log.info("Auth Request: {}", authRequest.toString());
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         boolean isAuthenticated = authRequest.username().equals(username) && authRequest.password().equals(password);
 
         if (isAuthenticated) {
-            log.info("returning: " + new AuthResponse(jwtService.generateToken(authRequest.username())));
-            return new AuthResponse(jwtService.generateToken(authRequest.username()));
-
+            return new ResponseEntity<>(jwtService.generateToken(authRequest.username()), HttpStatus.OK);
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }

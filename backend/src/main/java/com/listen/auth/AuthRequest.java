@@ -1,4 +1,4 @@
-package com.slp.auth;
+package com.listen.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.slp.entities;
+package com.listen.data;
 
 
 import jakarta.persistence.Entity;

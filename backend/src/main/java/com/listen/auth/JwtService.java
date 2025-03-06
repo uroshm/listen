@@ -1,4 +1,4 @@
-package com.slp.auth;
+package com.listen.auth;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
