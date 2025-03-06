@@ -1,18 +1,18 @@
--- CREATE USER "widget_user" WITH PASSWORD 'password';
--- CREATE DATABASE "widget_db" OWNER "widget_user";
-CREATE SCHEMA "widget_schema";
-GRANT ALL PRIVILEGES ON DATABASE "widget_db" TO "widget_user";
-GRANT ALL PRIVILEGES ON SCHEMA "widget_schema" TO "widget_user";
+CREATE USER "listen_user" WITH PASSWORD 'password';
+-- CREATE DATABASE "listen_db" OWNER "listen_user";
+CREATE SCHEMA "listen_schema";
+GRANT ALL PRIVILEGES ON DATABASE "listen_db" TO "listen_user";
+GRANT ALL PRIVILEGES ON SCHEMA "listen_schema" TO "listen_user";
 
 
-CREATE TABLE widget_schema.widget (
+CREATE TABLE listen_schema.listen (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     image BYTEA
 );
 
-INSERT INTO "widget_schema"."widget" ("name", "description") VALUES ('Widget 1', 'This is the first widget');
-INSERT INTO "widget_schema"."widget" ("name", "description") VALUES ('Widget 2', 'This is the second widget');
-INSERT INTO "widget_schema"."widget" ("name", "description") VALUES ('Widget 3', 'This is the third widget');
+INSERT INTO "listen_schema"."listen" ("name", "description") VALUES ('listen 1', 'This is the first listen');
+INSERT INTO "listen_schema"."listen" ("name", "description") VALUES ('listen 2', 'This is the second listen');
+INSERT INTO "listen_schema"."listen" ("name", "description") VALUES ('listen 3', 'This is the third listen');
 
