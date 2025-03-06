@@ -39,16 +39,6 @@ const Header = () => {
           >
             Home
           </motion.button>
-          <motion.button
-            initial="default"
-            whileHover="hover"
-            whileTap="pressed"
-            variants={buttonVariants}
-            className="nav-link"
-            onClick={() => navigate('/about')}
-          >
-            About Us
-          </motion.button>
           <div
             className="services-container"
             onMouseEnter={() => setShowServicesDropdown(true)}

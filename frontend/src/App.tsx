@@ -2,8 +2,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/header/Header';
 import Home from './components/home/Home';
-import About from './components/about/About';
-import Record from './components/widgets/Widgets';
+import Record from './components/record/Record';
 import Contact from './components/contact/Contact';
 import Login from './components/login/Login';
 import ShoppingCart from './components/shopping-cart/ShoppingCart';
@@ -16,7 +15,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
           <Route path="/services" element={<Record />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
