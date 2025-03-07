@@ -16,6 +16,13 @@ To run the backend, use the following commands:
 cd backend
 ./gradlew bootRun
 ```
+### Converting .wav files
+
+If you find that your .wav file is not being transcribed properly, it could because the sample rate isn't compatible with Sphinx. You can convert the file to a sample rate of 16kHz and 16-bit PCM encoded using the following command:
+
+```sh
+ffmpeg -i <filename.wav> -ac 1 -ar 16000 -sample_fmt s16 <filename_converted.wav>
+```
 
 ## Frontend
 
