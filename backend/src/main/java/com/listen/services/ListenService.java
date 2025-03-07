@@ -28,16 +28,17 @@ public class ListenService {
         return widgetRepository.findAll();
     }
 
-    public TranscriptionResult uploadAudio(MultipartFile multipartFile) {
+    public TranscriptionResult uploadAudio(MultipartFile multipartFile, String expectedText) {
         try {
-            var file = new File("src/main/resources/tempAudioFile.wav");
+            var file = File.createTempFile("tempAudioFile", ".wav");
             multipartFile.transferTo(file);
-            var expectedText = "The cow jumped over the moon";
+
             var transcribedText = transcriptionService.transcribeAudio(file.getPath());
             var result = phonemeComparison.compareTranscription(transcribedText, expectedText);
-
-            file.delete();
-            log.info(result.toString());
+            
+            if (!file.delete()) {
+                log.warn("Failed to delete temporary file: " + file.getPath());
+            }
             return result;
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,7 +33,8 @@ public class ListenController {
     }
 
     @PostMapping("/uploadAudio")
-    public TranscriptionResult uploadAudio(@RequestParam("file") MultipartFile file) {
-        return listenService.uploadAudio(file);
+    public TranscriptionResult uploadAudio(@RequestParam("file") MultipartFile file,
+            @RequestParam("expectedText") String expectedText) {
+        return listenService.uploadAudio(file, expectedText);
     }
 }
