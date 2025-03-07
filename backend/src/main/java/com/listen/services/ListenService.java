@@ -1,8 +1,6 @@
 package com.listen.services;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -14,39 +12,32 @@ import com.listen.data.Widget;
 import com.listen.repositories.WidgetRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ListenService {
 
     private final WidgetRepository widgetRepository;
+    private final TranscriptionService transcriptionService;
+    private final PhonemeComparison phonemeComparison;
 
     public List<Widget> getAllWidgets() {
         return widgetRepository.findAll();
     }
 
-    public TranscriptionResult uploadAudio(MultipartFile file) {
+    public TranscriptionResult uploadAudio(MultipartFile multipartFile) {
         try {
-            File tempAudioFile = File.createTempFile("temp_audio", ".wav");
+            var file = new File("src/main/resources/tempAudioFile.wav");
+            multipartFile.transferTo(file);
+            var expectedText = "The cow jumped over the moon";
+            var transcribedText = transcriptionService.transcribeAudio(file.getPath());
+            var result = phonemeComparison.compareTranscription(transcribedText, expectedText);
 
-            // Copy the contents of the MultipartFile into the temp file
-            file.transferTo(tempAudioFile);
-
-            // Expected transcription text
-            String expectedText = "The cow jumped over the moon";
-
-            // Transcribe the audio file
-            String transcribedText = TranscriptionService.transcribeAudio(tempAudioFile.getPath());
-
-            // Compare the transcription with the expected text
-            TranscriptionResult result = PhonemeComparison.compareTranscription(transcribedText, expectedText);
-
-            // Clean up temporary file
-            tempAudioFile.delete();
-
-            // Output the result as JSON
-            System.out.println(result.toString());
+            file.delete();
+            log.info(result.toString());
             return result;
         } catch (Exception e) {
             e.printStackTrace();

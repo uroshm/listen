@@ -4,11 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
 import com.listen.data.TranscriptionResult;
 
+@Service
 public class PhonemeComparison {
 
-    public static TranscriptionResult compareTranscription(String transcribedText, String expectedText) {
+    public TranscriptionResult compareTranscription(String transcribedText, String expectedText) {
         List<String> transcribedPhonemes = convertToPhonemes(transcribedText);
         List<String> expectedPhonemes = convertToPhonemes(expectedText);
 
@@ -22,7 +25,7 @@ public class PhonemeComparison {
         return new TranscriptionResult(transcribedText, expectedText, score, transcribedPhonemes, expectedPhonemes, matchCount, totalPhonemes);
     }
 
-    private static List<String> convertToPhonemes(String text) {
+    private List<String> convertToPhonemes(String text) {
         // Simulate conversion to phonemes for now; you can use CMU's G2P or another library
         return Arrays.stream(text.split(" "))
                 .map(word -> word.toLowerCase())  // Convert each word to lowercase as a "fake" phoneme
