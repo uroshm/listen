@@ -13,8 +13,57 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [recordedAudio, setRecordedAudio] = useState<string | null>(null);
+
+  const audioChunksRef = useRef<Blob[]>([]); // Use a ref to store audio chunks
+
+  const startAudio = async (
+    audioContext: AudioContext,
+    analyser: AnalyserNode
+  ) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: 'audio/webm',
+        });
+        if (audioBlob.size > 0) {
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setRecordedAudio(audioUrl);
+        } else {
+          console.error('Audio blob is empty');
+        }
+        audioChunksRef.current = []; // Clear the ref after processing
+      };
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+    }
+  };
+
+  useEffect(() => {
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+
+    startAudio(audioContext, analyser);
+
+    return () => {
+      audioContext.close(); // Clean up
+    };
+  }, []);
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * sentencesByFile.length);
@@ -56,34 +105,13 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
       }
     };
 
-    const startAudio = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-
-      const recorder = new MediaRecorder(stream);
-      setMediaRecorder(recorder);
-
-      recorder.ondataavailable = (event) => {
-        setAudioChunks((prev) => [...prev, event.data]);
-      };
-
-      recorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setRecordedAudio(audioUrl);
-        setAudioChunks([]);
-      };
-    };
-
-    startAudio();
+    startAudio(audioContext, analyser);
     draw();
 
     return () => {
       audioContext.close();
-      audioContext.close();
     };
-  }, [width, height, audioChunks]);
+  }, [width, height]);
 
   const handleRecord = () => {
     if (mediaRecorder) {
