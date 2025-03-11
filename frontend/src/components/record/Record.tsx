@@ -35,13 +35,34 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
         }
       };
 
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: 'audio/webm',
         });
         if (audioBlob.size > 0) {
           const audioUrl = URL.createObjectURL(audioBlob);
           setRecordedAudio(audioUrl);
+
+          const formData = new FormData();
+          formData.append('file', audioBlob, 'recording.wav');
+
+          try {
+            const response = await fetch(
+              'http://localhost:8080/listen/uploadAudio',
+              {
+                method: 'POST',
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error('Failed to upload audio');
+            }
+
+            console.log('Audio uploaded successfully');
+          } catch (error) {
+            console.error('Error uploading audio:', error);
+          }
         } else {
           console.error('Audio blob is empty');
         }

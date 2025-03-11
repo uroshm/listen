@@ -24,7 +24,6 @@ const isTokenExpired = (token: string): boolean => {
 export const fetchToken = async (): Promise<string | null> => {
   // Check if the token cookie already exists
   const existingToken = Cookies.get('token');
-  console.log('existingToken: ' + existingToken);
   if (existingToken && !isTokenExpired(existingToken)) {
     return existingToken;
   }

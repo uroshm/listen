@@ -1,73 +1,41 @@
+// src/components/Login.tsx
 import React, { useState } from 'react';
-import './Login.css';
+import { useAuth } from '../../auth/AuthContext';
 
-interface LoginProps {
-  onLogin?: (email: string, password: string) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [username, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login: React.FC = () => {
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      console.log('Using username:', username);
-      console.log('Using password:', password);
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        // const data = await response.json();
-        if (onLogin) {
-          onLogin(username, password);
-        }
-      } else {
-        // Handle error response
-        console.error('Login failed');
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-    }
+    // Simulate login and get a JWT token from your server
+    const jwtToken = await fetch('http://localhost:8080/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    }).then((res) => res.text());
+    login(jwtToken);
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="username"
-              value={username}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="login-button">
-            Log In
-          </button>
-        </form>
-      </div>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
+      <button type="submit">Login</button>
+    </form>
   );
 };
 

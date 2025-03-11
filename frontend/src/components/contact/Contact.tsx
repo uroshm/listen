@@ -16,8 +16,6 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission here (e.g., API call, email service, etc.)
-    console.log('Form submitted:', formData);
   };
 
   const handleChange = (

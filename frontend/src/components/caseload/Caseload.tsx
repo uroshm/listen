@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import {
   MRT_EditActionButtons,
   MaterialReactTable,
-   type MRT_ColumnDef,
+  type MRT_ColumnDef,
   type MRT_Row,
   type MRT_TableOptions,
   useMaterialReactTable,
@@ -26,9 +26,10 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { useAuth } from '../../auth/AuthContext';
 
 const fakeData = [
-{
+  {
     id: '1',
     firstName: 'John',
     lastName: 'Doe',
@@ -40,8 +41,8 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    },
-    {
+  },
+  {
     id: '2',
     firstName: 'Jane',
     lastName: 'Smith',
@@ -53,8 +54,8 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    },
-    {
+  },
+  {
     id: '3',
     firstName: 'Alice',
     lastName: 'Johnson',
@@ -66,8 +67,8 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    },
-    {
+  },
+  {
     id: '4',
     firstName: 'Bob',
     lastName: 'Brown',
@@ -79,8 +80,8 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    },
-    {
+  },
+  {
     id: '5',
     firstName: 'Eve',
     lastName: 'White',
@@ -92,8 +93,8 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    },
-    {
+  },
+  {
     id: '6',
     firstName: 'Charlie',
     lastName: 'Green',
@@ -105,9 +106,10 @@ const fakeData = [
     roomNumber: 101,
     gradeLevel: 1,
     dob: new Date('2012-01-01').toLocaleDateString(),
-    }];
+  },
+];
 
-const Example = () => {
+const StudentInfoTable = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
@@ -215,7 +217,7 @@ const Example = () => {
         },
       },
     ],
-    [validationErrors],
+    [validationErrors]
   );
 
   //call CREATE hook
@@ -236,34 +238,30 @@ const Example = () => {
     useDeleteStudentInfo();
 
   //CREATE action
-  const handleCreateStudentInfo: MRT_TableOptions<StudentInfo>['onCreatingRowSave'] = async ({
-    values,
-    table,
-  }) => {
-    const newValidationErrors = validateStudentInfo(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await createStudentInfo(values);
-    table.setCreatingRow(null); //exit creating mode
-  };
+  const handleCreateStudentInfo: MRT_TableOptions<StudentInfo>['onCreatingRowSave'] =
+    async ({ values, table }) => {
+      const newValidationErrors = validateStudentInfo(values);
+      if (Object.values(newValidationErrors).some((error) => error)) {
+        setValidationErrors(newValidationErrors);
+        return;
+      }
+      setValidationErrors({});
+      await createStudentInfo(values);
+      table.setCreatingRow(null); //exit creating mode
+    };
 
   //UPDATE action
-  const handleSaveStudentInfo: MRT_TableOptions<StudentInfo>['onEditingRowSave'] = async ({
-    values,
-    table,
-  }) => {
-    const newValidationErrors = validateStudentInfo(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await updateStudentInfo(values);
-    table.setEditingRow(null); //exit editing mode
-  };
+  const handleSaveStudentInfo: MRT_TableOptions<StudentInfo>['onEditingRowSave'] =
+    async ({ values, table }) => {
+      const newValidationErrors = validateStudentInfo(values);
+      if (Object.values(newValidationErrors).some((error) => error)) {
+        setValidationErrors(newValidationErrors);
+        return;
+      }
+      setValidationErrors({});
+      await updateStudentInfo(values);
+      table.setEditingRow(null); //exit editing mode
+    };
 
   //DELETE action
   const openDeleteConfirmModal = (row: MRT_Row<StudentInfo>) => {
@@ -354,13 +352,14 @@ const Example = () => {
     ),
     state: {
       isLoading: isLoadingStudentInfos,
-      isSaving: isCreatingStudentInfo || isUpdatingStudentInfo || isDeletingStudentInfo,
+      isSaving:
+        isCreatingStudentInfo || isUpdatingStudentInfo || isDeletingStudentInfo,
       showAlertBanner: isLoadingStudentInfosError,
       showProgressBars: isFetchingStudentInfos,
     },
   });
-
-  return <MaterialReactTable table={table} />;
+  const { token } = useAuth();
+  return token ? <MaterialReactTable table={table} /> : <p>Not logged in!</p>;
 };
 
 //CREATE hook (post new user to api)
@@ -383,7 +382,7 @@ function useCreateStudentInfo() {
               ...newStudentInfoInfo,
               id: (Math.random() + 1).toString(36).substring(7),
             },
-          ] as StudentInfo[],
+          ] as StudentInfo[]
       );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
@@ -416,8 +415,10 @@ function useUpdateStudentInfo() {
     onMutate: (newStudentInfoInfo: StudentInfo) => {
       queryClient.setQueryData(['users'], (prevStudentInfos: any) =>
         prevStudentInfos?.map((prevStudentInfo: StudentInfo) =>
-          prevStudentInfo.id === newStudentInfoInfo.id ? newStudentInfoInfo : prevStudentInfo,
-        ),
+          prevStudentInfo.id === newStudentInfoInfo.id
+            ? newStudentInfoInfo
+            : prevStudentInfo
+        )
       );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
@@ -436,7 +437,7 @@ function useDeleteStudentInfo() {
     //client side optimistic update
     onMutate: (userId: string) => {
       queryClient.setQueryData(['users'], (prevStudentInfos: any) =>
-        prevStudentInfos?.filter((user: StudentInfo) => user.id !== userId),
+        prevStudentInfos?.filter((user: StudentInfo) => user.id !== userId)
       );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
@@ -448,11 +449,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { StudentInfo, usStates } from '../../assets/utils';
 
 const queryClient = new QueryClient();
-
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Example />
+      <StudentInfoTable />
       <Suspense fallback={null}>
         <ReactQueryDevtools />
       </Suspense>
@@ -461,14 +461,6 @@ export default function App() {
 }
 
 const validateRequired = (value: string) => !!value.length;
-const validateEmail = (email: string) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    );
-
 function validateStudentInfo(user: StudentInfo) {
   return {
     firstName: !validateRequired(user.firstName)
