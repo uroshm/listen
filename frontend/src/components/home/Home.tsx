@@ -38,7 +38,11 @@ const Home = () => {
     <div className="about-container">
       <section className="hero">
         <h1>The Listen Application</h1>
-        <p>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           Listen is a free, open-source, multi-purpose tool designed
           specifically for speech-language pathologists (SLPs). It provides an
           all-in-one solution for SLPs to enhance their work with clients
@@ -59,7 +63,7 @@ const Home = () => {
           robust and accessible. If you're interested in getting involved,
           please visit our GitHub repository and become part of the Listen
           community.
-        </p>
+        </motion.p>
       </section>
 
       <div className="team">

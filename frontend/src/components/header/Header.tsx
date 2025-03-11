@@ -62,6 +62,16 @@ const Header = () => {
                   whileTap="pressed"
                   variants={buttonVariants}
                   className="nav-link dropdown-item"
+                  onClick={() => navigate('/caseload')}
+                >
+                  <i className="fas fa-users"></i> Caseload
+                </motion.button>
+                <motion.button
+                  initial="default"
+                  whileHover="hover"
+                  whileTap="pressed"
+                  variants={buttonVariants}
+                  className="nav-link dropdown-item"
                   onClick={() => navigate('/record')}
                 >
                   <i className="fas fa-microphone"></i> Record
