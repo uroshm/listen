@@ -37,7 +37,7 @@ const Header = () => {
             className="nav-link"
             onClick={() => navigate('/home')}
           >
-            Home
+            <i className="fas fa-home"></i> Home
           </motion.button>
           <div
             className="services-container"
@@ -52,7 +52,7 @@ const Header = () => {
               className="nav-link"
               onClick={() => navigate('/services')}
             >
-              Services
+              <i className="fas fa-concierge-bell"></i> Services
             </motion.button>
 
             {showServicesDropdown && (
@@ -65,7 +65,7 @@ const Header = () => {
                   className="nav-link dropdown-item"
                   onClick={() => navigate('/record')}
                 >
-                  Record
+                  <i className="fas fa-microphone"></i> Record
                 </motion.button>
               </div>
             )}
@@ -78,7 +78,7 @@ const Header = () => {
             className="nav-link"
             onClick={() => navigate('/contact')}
           >
-            Contact Us
+            <i className="fas fa-envelope"></i> Contact Us
           </motion.button>
           <motion.button
             initial="default"
@@ -88,7 +88,7 @@ const Header = () => {
             className="nav-link"
             onClick={() => navigate('/login')}
           >
-            Login
+            <i className="fas fa-sign-in-alt"></i> Login
           </motion.button>
           <div
             className="shopping-cart-container"
@@ -103,11 +103,7 @@ const Header = () => {
               className="nav-link"
               onClick={() => navigate('/shopping-cart')}
             >
-              <img
-                src="/shoppingCart.png"
-                alt="Shopping Cart"
-                className="shopping-cart-icon"
-              />
+              <i className="fas fa-shopping-cart"></i>
             </motion.button>
             {isCartOpen && (
               <div className="shopping-cart-dropdown">
