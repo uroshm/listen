@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import './Header.css';
 import { useNavigate } from 'react-router-dom';
-import ShoppingCartIcon from '../shopping-cart/ShoppingCartIcon';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,27 +89,6 @@ const Header = () => {
           >
             <i className="fas fa-sign-in-alt"></i> Login
           </motion.button>
-          <div
-            className="shopping-cart-container"
-            onMouseEnter={() => setIsCartOpen(true)}
-            onMouseLeave={() => setIsCartOpen(false)}
-          >
-            <motion.button
-              initial="default"
-              whileHover="hover"
-              whileTap="pressed"
-              variants={buttonVariants}
-              className="nav-link"
-              onClick={() => navigate('/shopping-cart')}
-            >
-              <i className="fas fa-shopping-cart"></i>
-            </motion.button>
-            {isCartOpen && (
-              <div className="shopping-cart-dropdown">
-                <ShoppingCartIcon />
-              </div>
-            )}
-          </div>
         </div>
 
         <div

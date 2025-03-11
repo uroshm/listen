@@ -37,11 +37,28 @@ const Home = () => {
   return (
     <div className="about-container">
       <section className="hero">
-        <h1>About Listen</h1>
+        <h1>The Listen Application</h1>
         <p>
-          Listen is a speech recognition application used by speech language
-          pathologists. It is free to use and open source. Please consider
-          contributing to the project on GitHub.
+          Listen is a free, open-source, multi-purpose tool designed
+          specifically for speech-language pathologists (SLPs). It provides an
+          all-in-one solution for SLPs to enhance their work with clients
+          through advanced features such as real-time speech recognition, record
+          keeping, goal setting, goal tracking, and analytics.
+          <br />
+          <br />
+          By leveraging AI and cutting-edge speech technology, Listen empowers
+          SLPs to streamline their workflow, track progress, and make informed
+          decisions based on data insights.
+          <br />
+          <br />
+          Whether you're documenting therapy sessions, setting specific
+          communication goals for clients, or analyzing speech patterns, Listen
+          offers a reliable and user-friendly platform tailored to meet the
+          unique needs of speech therapy professionals. We encourage
+          contributions to help further develop this tool, making it even more
+          robust and accessible. If you're interested in getting involved,
+          please visit our GitHub repository and become part of the Listen
+          community.
         </p>
       </section>
 

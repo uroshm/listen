@@ -5,7 +5,6 @@ import Home from './components/home/Home';
 import Record from './components/record/Record';
 import Contact from './components/contact/Contact';
 import Login from './components/login/Login';
-import ShoppingCart from './components/shopping-cart/ShoppingCart';
 
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
           <Route path="/services" element={<Record />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/shopping-cart" element={<ShoppingCart />} />
           <Route path="/record" element={<Record />} />
         </Routes>
       </div>
