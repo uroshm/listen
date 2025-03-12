@@ -26,7 +26,7 @@ class ListenServiceTest {
 
     @Mock
     private TranscriptionService transcriptionService;
-    
+
     @Mock
     private PhonemeComparison phonemeComparison;
 
@@ -40,7 +40,7 @@ class ListenServiceTest {
         when(transcriptionService.transcribeAudio(anyString())).thenReturn("helloWorld");
         when(phonemeComparison.compareTranscription(anyString(), anyString())).thenReturn(new TranscriptionResult());
 
-        var result = listenService.uploadAudio(file);
+        var result = listenService.uploadAudio(file, "hello world");
 
         assertNotNull(result);
     }
