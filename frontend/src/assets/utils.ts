@@ -13,14 +13,14 @@ export type StudentInfo = {
   id: string;
   firstName: string;
   lastName: string;
-  iepDate: Date;
-  evalDate: Date;
+  iepDate: string;
+  evalDate: string;
   school: string;
   therapyType: string;
   teacher: string;
   roomNumber: number;
   gradeLevel: number;
-  dob: Date;
+  dob: string;
 };
 
 export const usStates = [
