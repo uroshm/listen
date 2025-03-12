@@ -365,7 +365,7 @@ const StudentInfoTable = () => {
 //CREATE hook (post new user to api)
 function useCreateStudentInfo() {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation({  
     mutationFn: async (user: StudentInfo) => {
       //send api update request here
       console.log('user: ' + user);
