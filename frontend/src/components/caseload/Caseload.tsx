@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import {
   MRT_EditActionButtons,
   MaterialReactTable,
@@ -225,7 +225,7 @@ const StudentInfoTable = () => {
     useCreateStudentInfo();
   //call READ hook
   const {
-    data: fetchedStudentInfos = [],
+    data = fakeData,
     isError: isLoadingStudentInfosError,
     isFetching: isFetchingStudentInfos,
     isLoading: isLoadingStudentInfos,
@@ -272,7 +272,7 @@ const StudentInfoTable = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: fakeData,
+    data: data as StudentInfo[],
     createDisplayMode: 'modal', //default ('row', and 'custom' are also available)
     editDisplayMode: 'modal', //default ('row', 'cell', 'table', and 'custom' are also available)
     enableEditing: true,
@@ -368,6 +368,7 @@ function useCreateStudentInfo() {
   return useMutation({
     mutationFn: async (user: StudentInfo) => {
       //send api update request here
+      console.log('user: ' + user);
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
@@ -408,6 +409,7 @@ function useUpdateStudentInfo() {
   return useMutation({
     mutationFn: async (user: StudentInfo) => {
       //send api update request here
+      console.log('user: ' + user);
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
@@ -431,6 +433,7 @@ function useDeleteStudentInfo() {
   return useMutation({
     mutationFn: async (userId: string) => {
       //send api update request here
+      console.log('userId: ' + userId);
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
@@ -446,7 +449,7 @@ function useDeleteStudentInfo() {
 
 //react query setup in App.tsx
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { StudentInfo, usStates } from '../../assets/utils';
+import { StudentInfo } from '../../assets/utils';
 
 const queryClient = new QueryClient();
 export default function App() {
