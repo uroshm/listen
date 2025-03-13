@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import './Header.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { token, logout, username } = useAuth();
 
   const buttonVariants = {
     default: { scale: 1, backgroundColor: '#ffffff' },
@@ -14,6 +16,15 @@ const Header = () => {
   };
 
   const [showServicesDropdown, setShowServicesDropdown] = useState(false);
+
+  const handleAuthClick = () => {
+    if (token) {
+      logout();
+      navigate('/home');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <header className="header">
@@ -94,10 +105,16 @@ const Header = () => {
             whileTap="pressed"
             variants={buttonVariants}
             className="nav-link"
-            onClick={() => navigate('/login')}
+            onClick={handleAuthClick}
           >
-            <i className="fas fa-sign-in-alt"></i> Login
+            <i className={`fas fa-sign-${token ? 'out' : 'in'}-alt`}></i>
+            {token ? ' Log Out' : ' Log In'}
           </motion.button>
+          {token && username && (
+            <div className="user-info">
+              <span className="username">Welcome, {username}</span>
+            </div>
+          )}
         </div>
 
         <div

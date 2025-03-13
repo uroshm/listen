@@ -1,10 +1,7 @@
-// Import React and other necessary modules
 import React, { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-// Define the Login component
 const Login: React.FC = () => {
-  // State variables for username, password, error message, and authentication
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -24,21 +21,14 @@ const Login: React.FC = () => {
         throw new Error('Login failed');
       }
       const jwtToken = await response.text();
-      login(jwtToken, username);
-      handleSuccess();
+      login(jwtToken);
     } catch (error) {
       setError('Login failed. Please check your credentials.');
     }
   };
 
-  const handleSuccess = () => {
-    setError('');
-    window.location.href = '/home';
-  };
-
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: '300px', margin: '0 auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
-      {/* Display error message if there is one */}
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
       <input
         type="text"
@@ -59,5 +49,4 @@ const Login: React.FC = () => {
   );
 };
 
-// Export the Login component
-export default Login;
+export default Login; 

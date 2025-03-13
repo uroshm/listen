@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { sentencesByFile, SentenceByFile } from '../../assets/utils';
+import { useAuth } from '../../auth/AuthContext';
 
 interface SpectrogramProps {
   width?: number;
@@ -145,7 +146,9 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
     }
   };
 
-  return (
+  const { token } = useAuth();
+
+  return token ? (
     <div>
       <canvas ref={canvasRef} width={width} height={height}></canvas>
       <div
@@ -172,7 +175,7 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
         />
       )}
     </div>
-  );
+  ) : <p>Not logged in!</p>;
 };
 
 export default Record;
