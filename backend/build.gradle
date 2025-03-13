@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'com.listen'
@@ -16,16 +17,14 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    maven {
+        url "https://raw.githubusercontent.com/cmusphinx/sphinx4/master/maven/"
+    }
 }
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     
-    // Sphinx
-    implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
-    implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'
-
     // Add Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -45,10 +44,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-
-    // Thymeleaf
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     
     // Add Spring Security starter
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -60,4 +55,21 @@ tasks.named('test') {
 
 springBoot {
     mainClass = 'com.listen.Application'
+}
+
+// Add Spotless configuration
+spotless {
+    java {
+        // Use the latest version of google-java-format
+        googleJavaFormat('1.17.0')
+        
+        // Remove unused imports
+        removeUnusedImports()
+        
+        // Sort imports
+        importOrder('java', 'javax', 'org', 'com', '')
+        
+        // Enforce Unix-style line endings
+        endWithNewline()
+    }
 }

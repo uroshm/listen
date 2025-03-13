@@ -1,6 +1,5 @@
 package com.listen.data;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -15,20 +14,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Widget {
 
-    @Id
-    private Long id;
+  @Id private Long id;
 
-    private String name;
+  private String name;
 
-    private String description;
+  private String description;
 
-    @Override
-    public String toString(){
-        return "Widget{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
-
+  @Override
+  public String toString() {
+    return "Widget{"
+        + "id="
+        + id
+        + ", name='"
+        + name
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + '}';
+  }
 }
