@@ -47,10 +47,8 @@ public class SecurityConfigureAdapter {
                     .anyRequest()
                     .authenticated() // Protect all other endpoints
             )
-        .sessionManagement(
-            sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No sessions
-            )
-        .authenticationProvider(authenticationProvider()) // Custom authentication provider
+        .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }

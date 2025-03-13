@@ -3,10 +3,12 @@ package com.listen.auth;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +21,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
-  // Replace this with a secure key in a real application, ideally fetched from environment
-  // variables
+  @Value("${auth.token.expiration.minutes}")
+  private Integer tokenExpirationMinutes;
+
   public static final String SECRET =
       "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
@@ -35,7 +38,9 @@ public class JwtService {
         .setSubject(userName)
         .setIssuedAt(new Date())
         .setExpiration(
-            new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // Token valid for 30 minutes
+            new Date(
+                System.currentTimeMillis()
+                    + 1000 * 60 * (Optional.of(tokenExpirationMinutes).orElse(30))))
         .signWith(SignatureAlgorithm.HS256, getSignKey())
         .compact();
   }
