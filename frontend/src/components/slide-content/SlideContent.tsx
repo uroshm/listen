@@ -19,7 +19,7 @@ const SlideContent = ({ slides }: SlideContentProps) => {
   const [direction, setDirection] = useState('forward');
 
   useEffect(() => {
-    const timeBetweenSlides = 12000;
+    const timeBetweenSlides = 4000;
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === slides.length - 1 ? 0 : prevIndex + 1

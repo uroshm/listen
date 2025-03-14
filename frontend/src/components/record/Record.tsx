@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { sentencesByFile, SentenceByFile } from '../../assets/utils';
+import { sentencesByFile, SentenceByFile } from '../../utils';
 import { useAuth } from '../../auth/AuthContext';
 
 interface SpectrogramProps {
@@ -15,6 +15,8 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
     null
   );
   const [recordedAudio, setRecordedAudio] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<string>('');
+  const { getToken } = useAuth();
 
   const audioChunksRef = useRef<Blob[]>([]); // Use a ref to store audio chunks
 
@@ -46,23 +48,88 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
 
           const formData = new FormData();
           formData.append('file', audioBlob, 'recording.wav');
+          formData.append('expected_text', randomSentence?.value || '');
 
           try {
-            const response = await fetch(
-              'http://localhost:8080/listen/uploadAudio',
+            const audioResponse = await fetch(
+              'http://127.0.0.1:8000/api/speech/analyze/',
               {
                 method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${getToken()}`,
+                },
                 body: formData,
               }
             );
 
-            if (!response.ok) {
+            if (!audioResponse.ok) {
               throw new Error('Failed to upload audio');
             }
 
-            console.log('Audio uploaded successfully');
+            const audioAnalysis = await audioResponse.text();
+            const parsedAudioAnalysis = JSON.parse(audioAnalysis);
+            console.log('Audio analysis:', parsedAudioAnalysis);
+            const apiKey = import.meta.env.VITE_LISTEN_OPENAI_API_KEY;
+
+            const aiResponse = await fetch(
+              'https://openrouter.ai/api/v1/chat/completions',
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: 'Bearer ' + apiKey,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: 'deepseek/deepseek-r1-zero:free',
+                  messages: [
+                    {
+                      role: 'user',
+                      content: `Analyze this speech result, and give a speech language pathology analysis:
+                       Transcription: ${parsedAudioAnalysis.transcription}
+                       Expected Text: ${parsedAudioAnalysis.expected_text}
+                       Phonemes: ${parsedAudioAnalysis.phonemes.join(', ')}`,
+                    },
+                  ],
+                }),
+                //body: JSON.stringify({
+                //  "model": "deepseek/deepseek-r1-zero:free",
+                //  "messages": [
+                //    {
+                //      "role": "user",
+                //      "content": `What TV show is this from? Transcription: ${parsedAudioAnalysis.transcription}`
+                //    }
+                //  ]
+                //})
+              }
+            );
+
+            if (!aiResponse.ok) {
+              throw new Error('Failed to get AI analysis');
+            }
+
+            const analysisData = await aiResponse.json();
+            const analysis = analysisData.choices[0].message.content;
+            console.log('Raw AI response:', analysis);
+
+            try {
+              // Remove the \boxed{} wrapper
+              const cleanedAnalysis = analysis.replace(/\\boxed{(.*?)}/s, '$1');
+
+              // Format the analysis with sections
+              const formattedAnalysis = `
+                Speech Analysis Results
+                ----------------------
+                ${cleanedAnalysis}
+              `.trim();
+
+              setAnalysisResult(formattedAnalysis);
+            } catch (error) {
+              console.error('Error formatting AI analysis:', error);
+              // Fallback to displaying the raw content
+              setAnalysisResult(analysis);
+            }
           } catch (error) {
-            console.error('Error uploading audio:', error);
+            console.error('Error processing audio:', error);
           }
         } else {
           console.error('Audio blob is empty');
@@ -146,9 +213,7 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
     }
   };
 
-  const { token } = useAuth();
-
-  return token ? (
+  return getToken() ? (
     <div>
       <canvas ref={canvasRef} width={width} height={height}></canvas>
       <div
@@ -168,14 +233,32 @@ const Record: React.FC<SpectrogramProps> = ({ width = 800, height = 400 }) => {
         {isRecording ? 'Stop Recording' : 'Start Recording'}
       </button>
       {recordedAudio && (
-        <audio
-          controls
-          src={recordedAudio}
-          style={{ display: 'block', margin: '20px auto' }}
-        />
+        <>
+          <audio
+            controls
+            src={recordedAudio}
+            style={{ display: 'block', margin: '20px auto' }}
+          />
+          {analysisResult && (
+            <div
+              style={{
+                margin: '20px auto',
+                padding: '20px',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '5px',
+                maxWidth: '600px',
+              }}
+            >
+              <h3>Analysis:</h3>
+              <p>{analysisResult}</p>
+            </div>
+          )}
+        </>
       )}
     </div>
-  ) : <p>Not logged in!</p>;
+  ) : (
+    <p>Not logged in!</p>
+  );
 };
 
 export default Record;

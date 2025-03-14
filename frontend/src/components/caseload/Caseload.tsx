@@ -168,13 +168,6 @@ const StudentInfoTable = () => {
         },
       },
       {
-        accessorKey: 'evalDate',
-        header: 'Eval Date',
-        muiEditTextFieldProps: {
-          required: true,
-        },
-      },
-      {
         accessorKey: 'school',
         header: 'School',
         muiEditTextFieldProps: {
@@ -358,14 +351,18 @@ const StudentInfoTable = () => {
       showProgressBars: isFetchingStudentInfos,
     },
   });
-  const { token } = useAuth();
-  return token ? <MaterialReactTable table={table} /> : <p>Not logged in!</p>;
+  const { getToken } = useAuth();
+  return getToken() ? (
+    <MaterialReactTable table={table} />
+  ) : (
+    <p>Not logged in!</p>
+  );
 };
 
 //CREATE hook (post new user to api)
 function useCreateStudentInfo() {
   const queryClient = useQueryClient();
-  return useMutation({  
+  return useMutation({
     mutationFn: async (user: StudentInfo) => {
       //send api update request here
       console.log('user: ' + user);
@@ -448,17 +445,14 @@ function useDeleteStudentInfo() {
 }
 
 //react query setup in App.tsx
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { StudentInfo } from '../../assets/utils';
+import { StudentInfo } from '../../utils';
 
 const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <StudentInfoTable />
-      <Suspense fallback={null}>
-        <ReactQueryDevtools />
-      </Suspense>
+      <Suspense fallback={null}></Suspense>
     </QueryClientProvider>
   );
 }

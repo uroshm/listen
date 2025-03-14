@@ -1,75 +1,67 @@
-// src/context/AuthContext.tsx
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useContext,
-  useMemo,
-} from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define the shape of the context
 interface AuthContextType {
-  token: string | null;
+  isAuthenticated: boolean;
   username: string | null;
-  login: (jwtToken: string, user: string) => void;
+  login: (token: string, username: string) => void;
   logout: () => void;
+  getToken: () => string | null;
 }
 
-// Create the AuthContext with a default value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// AuthProvider props
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-// AuthProvider Component
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(null);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
 
-  // Load the token from localStorage when the app starts
+  // Initialize auth state from localStorage
   useEffect(() => {
-    const savedToken = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('token');
     const savedUsername = localStorage.getItem('username');
-    if (savedToken) {
-      setToken(savedToken);
-    }
-    if (savedUsername) {
+
+    if (token && savedUsername) {
+      setIsAuthenticated(true);
       setUsername(savedUsername);
     }
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
-  // Save the token and username in localStorage and update state
-  const login = (jwtToken: string, user: string) => {
-    localStorage.setItem('jwtToken', jwtToken);
-    localStorage.setItem('username', user);
-    setToken(jwtToken);
-    setUsername(user);
+  const login = (token: string, username: string) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('username', username);
+    setIsAuthenticated(true);
+    setUsername(username);
   };
 
-  // Clear the token and username from localStorage and update state
   const logout = () => {
-    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('username');
-    setToken(null);
+    setIsAuthenticated(false);
     setUsername(null);
   };
 
-  const contextValue = useMemo(() => ({ token, username, login, logout }), [token, username, login, logout]);
+  const getToken = () => {
+    return localStorage.getItem('token');
+  };
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+  const value = React.useMemo(
+    () => ({
+      isAuthenticated,
+      username,
+      login,
+      logout,
+      getToken,
+    }),
+    [isAuthenticated, username]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook to use the AuthContext
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

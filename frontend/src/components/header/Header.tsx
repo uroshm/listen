@@ -7,7 +7,7 @@ import { useAuth } from '../../auth/AuthContext';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { token, logout, username } = useAuth();
+  const { getToken, logout, username } = useAuth();
 
   const buttonVariants = {
     default: { scale: 1, backgroundColor: '#ffffff' },
@@ -18,7 +18,7 @@ const Header = () => {
   const [showServicesDropdown, setShowServicesDropdown] = useState(false);
 
   const handleAuthClick = () => {
-    if (token) {
+    if (getToken()) {
       logout();
       navigate('/home');
     } else {
@@ -86,6 +86,16 @@ const Header = () => {
                 >
                   <i className="fas fa-microphone"></i> Record
                 </motion.button>
+                <motion.button
+                  initial="default"
+                  whileHover="hover"
+                  whileTap="pressed"
+                  variants={buttonVariants}
+                  className="nav-link dropdown-item"
+                  onClick={() => navigate('/wordlist')}
+                >
+                  <i className="fa-solid fa-list-check"></i> Word List
+                </motion.button>
               </div>
             )}
           </div>
@@ -107,10 +117,10 @@ const Header = () => {
             className="nav-link"
             onClick={handleAuthClick}
           >
-            <i className={`fas fa-sign-${token ? 'out' : 'in'}-alt`}></i>
-            {token ? ' Log Out' : ' Log In'}
+            <i className={`fas fa-sign-${getToken() ? 'out' : 'in'}-alt`}></i>
+            {getToken() ? ' Log Out' : ' Log In'}
           </motion.button>
-          {token && username && (
+          {getToken() && username && (
             <div className="user-info">
               <span className="username">Welcome, {username}</span>
             </div>

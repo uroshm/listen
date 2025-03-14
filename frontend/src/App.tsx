@@ -6,23 +6,28 @@ import Record from './components/record/Record';
 import Contact from './components/contact/Contact';
 import Login from './components/login/Login';
 import Caseload from './components/caseload/Caseload';
+import WordList from './components/wordlist/WordList';
+import { AuthProvider } from './auth/AuthContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/services" element={<Record />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/caseload" element={<Caseload />} />
-          <Route path="/record" element={<Record />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <div>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/services" element={<Record />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/caseload" element={<Caseload />} />
+            <Route path="/record" element={<Record />} />
+            <Route path="/wordlist" element={<WordList />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

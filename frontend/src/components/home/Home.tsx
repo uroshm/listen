@@ -1,28 +1,6 @@
 import './Home.css';
-import SlideContent from '../slide-content/SlideContent';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-
-const employeeSlides = [
-  {
-    title: 'John Doe',
-    content: '',
-    imageUrl: '/employee_1.jpeg',
-    path: '',
-  },
-  {
-    title: 'Jane Smith',
-    content: '',
-    imageUrl: '/employee_2.jpeg',
-    path: '',
-  },
-  {
-    title: 'Bob Poe',
-    content: '',
-    imageUrl: '/employee_3.jpeg',
-    path: '',
-  },
-];
 
 const Home = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -65,14 +43,6 @@ const Home = () => {
           community.
         </motion.p>
       </section>
-
-      <div className="team">
-        <h2>Our Team</h2>
-        <p>
-          Our team of experts is here to help you with all your Listen needs.
-        </p>
-        <SlideContent slides={employeeSlides} />
-      </div>
 
       <section className="mainContent">
         <div className="values">
