@@ -12,14 +12,17 @@ interface Slide {
 
 interface SlideContentProps {
   slides: Slide[];
+  autoScroll?: boolean;
 }
 
-const SlideContent = ({ slides }: SlideContentProps) => {
+const SlideContent = ({ slides, autoScroll = false }: SlideContentProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState('forward');
 
   useEffect(() => {
-    const timeBetweenSlides = 4000;
+    if (!autoScroll) return;
+
+    const timeBetweenSlides = 2000;
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === slides.length - 1 ? 0 : prevIndex + 1
@@ -27,7 +30,7 @@ const SlideContent = ({ slides }: SlideContentProps) => {
     }, timeBetweenSlides);
 
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides.length, autoScroll]);
 
   const handlePrevSlide = () => {
     setDirection('backward');
@@ -73,14 +76,6 @@ const SlideContent = ({ slides }: SlideContentProps) => {
   return (
     <div className="slide-creator">
       <div className="slides-container">
-        <button
-          className="slide-nav-button slide-nav-button--prev"
-          onClick={handlePrevSlide}
-          aria-label="Previous slide"
-        >
-          &#10094;
-        </button>
-
         <div className="slides-preview">
           <AnimatePresence
             initial={false}
@@ -121,20 +116,12 @@ const SlideContent = ({ slides }: SlideContentProps) => {
                   alt={slides[currentIndex].title}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2 }}
                 />
               )}
             </motion.div>
           </AnimatePresence>
         </div>
-
-        <button
-          className="slide-nav-button slide-nav-button--next"
-          onClick={handleNextSlide}
-          aria-label="Next slide"
-        >
-          &#10095;
-        </button>
       </div>
     </div>
   );

@@ -3,6 +3,9 @@ import { useAuth } from '../../auth/AuthContext';
 import { wordsBeginningS, wordsMiddleS, wordsEndS } from '../../utils';
 import SlideContent from '../slide-content/SlideContent';
 import CircularProgress from '@mui/material/CircularProgress';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 interface WordSlide {
   title: string;
@@ -19,20 +22,20 @@ const WordList: React.FC = () => {
     null
   );
   const [recordedAudio, setRecordedAudio] = useState<string | null>(null);
-  const [analysisResult] = useState<string>('');
+  const [analysisResult, setAnalysisResult] = useState<string>('');
 
   const { getToken } = useAuth();
 
-  const audioChunksRef = useRef<Blob[]>([]); // Use a ref to store audio chunks
+  const audioChunksRef = useRef<Blob[]>([]);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const wordSequenceRef = useRef<string[]>([]);
 
   const startAudio = async (
     audioContext: AudioContext,
     analyser: AnalyserNode
   ) => {
-    generateWordSequence();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const source = audioContext.createMediaStreamSource(stream);
@@ -55,13 +58,16 @@ const WordList: React.FC = () => {
           const audioUrl = URL.createObjectURL(audioBlob);
           setRecordedAudio(audioUrl);
 
+          // Use the ref instead of the state
+          const expectedWords = wordSequenceRef.current.join(' ');
+
           const formData = new FormData();
           formData.append('file', audioBlob, 'recording.wav');
-          formData.append('expected_text', wordSequence.join(' ') || '');
+          formData.append('expected_text', expectedWords);
 
           try {
             const audioResponse = await fetch(
-              'http://localhost:8000/api/speech/analyze/',
+              'http://0.0.0.0:8000/api/speech/analyze/',
               {
                 method: 'POST',
                 headers: {
@@ -75,56 +81,42 @@ const WordList: React.FC = () => {
               throw new Error('Failed to upload audio');
             }
 
-            const audioAnalysis = await audioResponse.text();
-            const parsedAudioAnalysis = JSON.parse(audioAnalysis);
-            console.log('Audio analysis:', parsedAudioAnalysis);
+            const audioAnalysis = await audioResponse.json();
+            console.log('Audio analysis:', audioAnalysis);
 
-            // const apiKey = import.meta.env.VITE_LISTEN_OPENAI_API_KEY;
-            // const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            //   method: "POST",
-            //   headers: {
-            //     "Authorization": "Bearer " + apiKey,
-            //     "Content-Type": "application/json"
-            //   },
-            //    body: JSON.stringify({
-            //      "model": "deepseek/deepseek-r1-zero:free",
-            //      "messages": [
-            //        {
-            //          "role": "user",
-            //          "content": `Analyze this speech result, and give a speech language pathology analysis:
-            //            Transcription: ${parsedAudioAnalysis.transcription}
-            //            Expected Text: ${parsedAudioAnalysis.expected_text}
-            //            Phonemes: ${parsedAudioAnalysis.phonemes.join(', ')}`
-            //        }
-            //      ]
-            //    })
-            // });
+            const apiKey = import.meta.env.VITE_API_KEY;
 
-            // if (!aiResponse.ok) {
-            //   throw new Error('Failed to get AI analysis');
-            // }
+            const aiResponse = await fetch(
+              'https://openrouter.ai/api/v1/chat/completions',
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: 'Bearer ' + apiKey,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: 'google/gemini-2.0-pro-exp-02-05:free',
+                  messages: [
+                    {
+                      role: 'user',
+                      content: `Show me a table output, with three categories initial, medial, and final. Group the following expected text words in these categories.
+                        Write a brief analysis on the results as well.
+                        Here is a list of words I asked my patient to pronounce.
+                        Focusing only on the S sound and where it appears in each word (initial, medial, or final), have data regarding % accurate production in table format, including words in each column.
+                        Expected Text: ${wordSequence.join(' ')}
+                        Patient Recorded Phonemes: ${audioAnalysis.phonemes ? audioAnalysis.phonemes.join(', ') : 'No phonemes detected'}`,
+                    },
+                  ],
+                }),
+              }
+            );
 
-            // const analysisData = await aiResponse.json();
-            // const analysis = analysisData.choices[0].message.content;
-            // console.log('Raw AI response:', analysis);
+            if (!aiResponse.ok) {
+              throw new Error('Failed to get AI analysis');
+            }
 
-            // try {
-            //   // Remove the \boxed{} wrapper
-            //   const cleanedAnalysis = analysis.replace(/\\boxed{(.*?)}/s, '$1');
-
-            //   // Format the analysis with sections
-            //   const formattedAnalysis = `
-            //     Speech Analysis Results
-            //     ----------------------
-            //     ${cleanedAnalysis}
-            //   `.trim();
-
-            //   setAnalysisResult(formattedAnalysis);
-            // } catch (error) {
-            //   console.error('Error formatting AI analysis:', error);
-            //   // Fallback to displaying the raw content
-            //   setAnalysisResult(analysis);
-            // }
+            const analysisData = await aiResponse.json();
+            setAnalysisResult(analysisData.choices[0].message.content);
           } catch (error) {
             console.error('Error processing audio:', error);
           }
@@ -139,11 +131,16 @@ const WordList: React.FC = () => {
   };
 
   const generateWordSequence = () => {
+    // Generate the word list
     const allWords = [...wordsBeginningS, ...wordsMiddleS, ...wordsEndS];
     const shuffled = [...allWords].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 10);
+
+    // Update both state and ref
     setWordSequence(selected);
-    // Preload images and create slides
+    wordSequenceRef.current = selected;
+
+    // Preload images separately
     const preloadImages = selected.map((word) => {
       return new Promise((resolve) => {
         const img = new Image();
@@ -160,11 +157,9 @@ const WordList: React.FC = () => {
       });
     });
 
-    // Update state once images are loaded
     Promise.all(preloadImages).then((loadedSlides) => {
       const validSlides = loadedSlides.filter(Boolean) as WordSlide[];
       setSlides(validSlides);
-      setWordSequence(selected);
     });
   };
 
@@ -199,7 +194,7 @@ const WordList: React.FC = () => {
       } else {
         mediaRecorder.start();
         setIsRecording(true);
-        setTimeLeft(40);
+        setTimeLeft(18);
 
         timerRef.current = setInterval(() => {
           setTimeLeft((prevTime) => {
@@ -219,7 +214,7 @@ const WordList: React.FC = () => {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      {!isAnalyzing && (
+      {!isAnalyzing && !isRecording && (
         <h3>
           Click the "Start Recording" button, and say whatever word you see on
           the screen!
@@ -228,7 +223,7 @@ const WordList: React.FC = () => {
 
       {slides.length > 0 && !isAnalyzing && (
         <div style={{ margin: '2rem auto', maxWidth: '800px' }}>
-          <SlideContent slides={slides} />
+          <SlideContent slides={slides} autoScroll={isRecording} />
         </div>
       )}
 
@@ -293,11 +288,18 @@ const WordList: React.FC = () => {
                 padding: '20px',
                 backgroundColor: '#f5f5f5',
                 borderRadius: '5px',
-                maxWidth: '600px',
+                maxWidth: '800px',
               }}
             >
               <h3>Analysis:</h3>
-              <p>{analysisResult}</p>
+              <div className="markdown-content">
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {analysisResult}
+                </ReactMarkdown>
+              </div>
             </div>
           )}
         </>
