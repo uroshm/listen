@@ -10,6 +10,7 @@ import torch
 from transformers import AutoProcessor, AutoModelForCTC
 import nltk
 from .data_class import SpeechAnalysisResult
+from analysis.utils.audio_converter import convert_audio_format
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,15 @@ class SpeechAnalysisService:
                 f.write(audio_file)
 
             audio_path = temp_file
-            audio, sr = librosa.load(audio_path, sr=16000, duration=10)
+
+            try:
+                audio, sr = librosa.load(audio_path, sr=None)
+            except Exception as e:
+                print(f"Direct loading failed: {e}, attempting conversion...")
+                converted_path = convert_audio_format(audio_path)
+                if not converted_path:
+                    raise Exception("Audio conversion failed")
+                audio, sr = librosa.load(converted_path, sr=None)
 
             if sr != 16000:
                 audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
@@ -111,6 +120,10 @@ class SpeechAnalysisService:
                 phonemes=phonemes,
                 error=None,
             )
+
+            if 'converted_path' in locals() and os.path.exists(converted_path):
+                os.remove(converted_path)
+
             return result
 
         except Exception as e:
