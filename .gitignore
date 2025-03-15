@@ -6,3 +6,7 @@ backend/build
 backend/bin
 backend/.vscode
 backend/.gradle
+
+.gitignore
+
+**/settings.json
