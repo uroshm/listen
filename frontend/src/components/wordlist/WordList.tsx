@@ -102,9 +102,10 @@ const WordList: React.FC = () => {
                       content: `Show me a table output, with three categories initial, medial, and final. Group the following expected text words in these categories.
                         Write a brief analysis on the results as well.
                         Here is a list of words I asked my patient to pronounce.
-                        Focusing only on the S sound and where it appears in each word (initial, medial, or final), have data regarding % accurate production in table format, including words in each column.
-                        Expected Text: ${wordSequence.join(' ')}
-                        Patient Recorded Phonemes: ${audioAnalysis.phonemes ? audioAnalysis.phonemes.join(', ') : 'No phonemes detected'}`,
+                        Focusing only on the S sound and where it appears in each word (initial, medial, or final), 
+                        have data regarding % accurate production in table format, including words in each column.
+                        Expected Text: ${audioAnalysis.expected_text}
+                        Actual Recorded Phonemes: ${audioAnalysis.phonemes ? audioAnalysis.phonemes.join(', ') : 'No phonemes detected'}`,
                     },
                   ],
                 }),
