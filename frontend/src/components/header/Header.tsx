@@ -26,6 +26,27 @@ const Header = () => {
     }
   };
 
+  const serviceLinks = [
+    {
+      title: 'Speech Recognition',
+      description: 'AI-powered analysis for accurate speech assessment',
+      icon: '🎯',
+      path: '/record',
+    },
+    {
+      title: 'Patient Management',
+      description: 'Track and monitor patient progress',
+      icon: '👥',
+      path: '/caseload',
+    },
+    {
+      title: 'Analytics Dashboard',
+      description: 'Visualize patient outcomes and practice metrics',
+      icon: '📊',
+      path: '/analytics',
+    },
+  ];
+
   return (
     <header className="header">
       <nav className="nav-container">
@@ -54,48 +75,39 @@ const Header = () => {
             onMouseLeave={() => setShowServicesDropdown(false)}
           >
             <motion.button
-              initial="default"
-              whileHover="hover"
-              whileTap="pressed"
-              variants={buttonVariants}
               className="nav-link"
-              onClick={() => navigate('/services')}
+              initial={{ backgroundColor: 'transparent' }}
+              whileHover={{ backgroundColor: 'rgba(0,0,0,0.04)' }}
             >
-              <i className="fas fa-concierge-bell"></i> Services
+              <span>Services</span>
+              <i
+                className="fas fa-chevron-down"
+                style={{ fontSize: '12px', marginLeft: '4px' }}
+              ></i>
             </motion.button>
 
             {showServicesDropdown && (
-              <div className="services-dropdown">
-                <motion.button
-                  initial="default"
-                  whileHover="hover"
-                  whileTap="pressed"
-                  variants={buttonVariants}
-                  className="nav-link dropdown-item"
-                  onClick={() => navigate('/caseload')}
-                >
-                  <i className="fas fa-users"></i> Caseload
-                </motion.button>
-                <motion.button
-                  initial="default"
-                  whileHover="hover"
-                  whileTap="pressed"
-                  variants={buttonVariants}
-                  className="nav-link dropdown-item"
-                  onClick={() => navigate('/record')}
-                >
-                  <i className="fas fa-microphone"></i> Record
-                </motion.button>
-                <motion.button
-                  initial="default"
-                  whileHover="hover"
-                  whileTap="pressed"
-                  variants={buttonVariants}
-                  className="nav-link dropdown-item"
-                  onClick={() => navigate('/wordlist')}
-                >
-                  <i className="fa-solid fa-list-check"></i> Word List
-                </motion.button>
+              <div className="mega-dropdown">
+                <div className="dropdown-header">
+                  <h3>Services & Tools</h3>
+                  <p>Everything you need for speech therapy management</p>
+                </div>
+                <div className="dropdown-grid">
+                  {serviceLinks.map((service, index) => (
+                    <motion.a
+                      key={index}
+                      href={service.path}
+                      className="dropdown-item-large"
+                      whileHover={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
+                    >
+                      <span className="item-icon">{service.icon}</span>
+                      <div className="item-content">
+                        <h4>{service.title}</h4>
+                        <p>{service.description}</p>
+                      </div>
+                    </motion.a>
+                  ))}
+                </div>
               </div>
             )}
           </div>
