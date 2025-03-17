@@ -28,7 +28,6 @@ class SpeechAnalysisService:
         analysis_id: UUID,
         audio_file: Union[str, bytes, BinaryIO],
         language: str = "en",
-        expected_text: str = None,
         settings: Dict[str, Any] = None,
     ) -> SpeechAnalysisResult:
         try:
