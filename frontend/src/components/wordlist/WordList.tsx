@@ -15,7 +15,6 @@ interface WordSlide {
 }
 
 const WordList: React.FC = () => {
-  const [wordSequence, setWordSequence] = useState<string[]>([]);
   const [slides, setSlides] = useState<WordSlide[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -137,8 +136,6 @@ const WordList: React.FC = () => {
     const shuffled = [...allWords].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 10);
 
-    // Update both state and ref
-    setWordSequence(selected);
     wordSequenceRef.current = selected;
 
     // Preload images separately
