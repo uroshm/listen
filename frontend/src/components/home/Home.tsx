@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <div className="about-container">
       <section className="hero">
-        <div className="hero-content">
+        <div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

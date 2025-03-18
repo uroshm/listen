@@ -209,7 +209,7 @@
 
 .mega-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%; /* Remove the gap */
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -292,4 +292,52 @@
   .dropdown-grid {
     gap: 16px;
   }
+}
+
+/* CSS for the Services dropdown */
+.services-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.services-button {
+  /* Your existing button styles */
+  position: relative;
+  z-index: 10;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position directly below the button */
+  left: 0;
+  margin-top: 0; /* Remove any margin */
+  padding-top: 0; /* Remove top padding */
+
+  /* Add a pseudo-element to bridge any gap */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Create an invisible bridge */
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent; /* Make it invisible */
+  }
+}
+
+/* Make sure the dropdown appears on hover */
+.services-dropdown-container:hover .dropdown-menu {
+  display: block; /* Or whatever display property you're using */
+}
+
+/* Add this pseudo-element to create an invisible bridge */
+.services-container:hover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 10px; /* Height of the bridge */
+  background: transparent;
+  z-index: 999;
 }
