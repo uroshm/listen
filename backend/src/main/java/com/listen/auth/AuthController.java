@@ -23,6 +23,7 @@ public class AuthController {
   record RegisterRequest(String username, String password) {}
 
   @PostMapping("/register")
+  @CrossOrigin("http://localhost:5173")
   public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
     return authService.registerUser(registerRequest.username(), registerRequest.password());
   }

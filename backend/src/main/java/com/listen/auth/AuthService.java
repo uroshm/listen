@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,8 @@ import com.listen.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+record AuthResponse(String token) {}
 
 @Service
 @RequiredArgsConstructor
@@ -75,11 +79,15 @@ public class AuthService implements UserDetailsService {
 
         // Generate token for the newly registered user
         String token = jwtService.generateToken(username);
-        return new ResponseEntity<>(new AuthResponse(token), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new AuthResponse(token));
       }
     } catch (SQLException e) {
       log.error("Error registering user", e);
-      return new ResponseEntity<>("Error registering user", HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(Map.of("message", "Error registering user"));
     }
   }
 
