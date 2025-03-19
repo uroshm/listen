@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import com.listen.data.ListenUser;
+import com.listen.entity.ListenUser;
 import com.listen.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;

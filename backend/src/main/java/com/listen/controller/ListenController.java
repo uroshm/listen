@@ -2,14 +2,20 @@ package com.listen.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.listen.auth.AuthService;
-import com.listen.data.Patient;
+import com.listen.dto.PatientDTO;
+import com.listen.entity.ListenUser;
+import com.listen.entity.Patient;
 import com.listen.services.ListenService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,11 +32,22 @@ public class ListenController {
 
   @CrossOrigin(origins = "http://localhost:5173")
   @GetMapping("/getMyPatients")
-  // @PreAuthorize("hasAuthority('ROLE_USER')")
+  @PreAuthorize("hasAuthority('ROLE_USER')")
   public List<Patient> getAllPatients(Authentication authentication) {
     log.info("uki ;; " + authentication.getPrincipal().toString());
     var username = authentication.getName();
     var currentUser = authService.findByUsername(username);
     return listenService.getPatientsByUser(currentUser);
+  }
+
+  @CrossOrigin(origins = "http://localhost:5173")
+  @PostMapping("/createPatient")
+  @PreAuthorize("hasAuthority('ROLE_USER')")
+  public ResponseEntity<Patient> createPatient(
+      @RequestBody PatientDTO patientDTO, Authentication authentication) {
+    ListenUser currentUser = authService.findByUsername(authentication.getName());
+    Patient patient = patientDTO.toEntity(currentUser);
+    Patient savedPatient = listenService.createPatient(patient);
+    return ResponseEntity.ok(savedPatient);
   }
 }

@@ -6,6 +6,7 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
   useMaterialReactTable,
+  createRow,
 } from 'material-react-table';
 import {
   Box,
@@ -25,94 +26,14 @@ import {
 } from '@tanstack/react-query';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import { useAuth } from '../../auth/AuthContext';
-
-const fakeData = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastName: 'Doe',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-  {
-    id: '2',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-  {
-    id: '3',
-    firstName: 'Alice',
-    lastName: 'Johnson',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-  {
-    id: '4',
-    firstName: 'Bob',
-    lastName: 'Brown',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-  {
-    id: '5',
-    firstName: 'Eve',
-    lastName: 'White',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-  {
-    id: '6',
-    firstName: 'Charlie',
-    lastName: 'Green',
-    iepDate: new Date('2022-01-01').toLocaleDateString(),
-    evalDate: new Date('2022-01-01').toLocaleDateString(),
-    school: 'School',
-    therapyType: 'Speech',
-    teacher: 'Teacher',
-    roomNumber: 101,
-    gradeLevel: 1,
-    dob: new Date('2012-01-01').toLocaleDateString(),
-  },
-];
 
 const StudentInfoTable = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
+
+  const [studentInfo, setStudentInfo] = useState<StudentInfo[]>([]);
 
   const columns = useMemo<MRT_ColumnDef<StudentInfo>[]>(
     () => [
@@ -216,21 +137,17 @@ const StudentInfoTable = () => {
   //call CREATE hook
   const { mutateAsync: createStudentInfo, isPending: isCreatingStudentInfo } =
     useCreateStudentInfo();
-  //call READ hook
   const {
-    data = fakeData,
+    data = studentInfo,
     isError: isLoadingStudentInfosError,
     isFetching: isFetchingStudentInfos,
     isLoading: isLoadingStudentInfos,
   } = useGetStudentInfos();
-  //call UPDATE hook
   const { mutateAsync: updateStudentInfo, isPending: isUpdatingStudentInfo } =
     useUpdateStudentInfo();
-  //call DELETE hook
   const { mutateAsync: deleteStudentInfo, isPending: isDeletingStudentInfo } =
     useDeleteStudentInfo();
 
-  //CREATE action
   const handleCreateStudentInfo: MRT_TableOptions<StudentInfo>['onCreatingRowSave'] =
     async ({ values, table }) => {
       const newValidationErrors = validateStudentInfo(values);
@@ -243,7 +160,6 @@ const StudentInfoTable = () => {
       table.setCreatingRow(null); //exit creating mode
     };
 
-  //UPDATE action
   const handleSaveStudentInfo: MRT_TableOptions<StudentInfo>['onEditingRowSave'] =
     async ({ values, table }) => {
       const newValidationErrors = validateStudentInfo(values);
@@ -256,7 +172,6 @@ const StudentInfoTable = () => {
       table.setEditingRow(null); //exit editing mode
     };
 
-  //DELETE action
   const openDeleteConfirmModal = (row: MRT_Row<StudentInfo>) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       deleteStudentInfo(row.original.id);
@@ -266,8 +181,8 @@ const StudentInfoTable = () => {
   const table = useMaterialReactTable({
     columns,
     data: data as StudentInfo[],
-    createDisplayMode: 'modal', //default ('row', and 'custom' are also available)
-    editDisplayMode: 'modal', //default ('row', 'cell', 'table', and 'custom' are also available)
+    createDisplayMode: 'modal',
+    editDisplayMode: 'modal',
     enableEditing: true,
     getRowId: (row) => row.id,
     muiToolbarAlertBannerProps: isLoadingStudentInfosError
@@ -285,7 +200,6 @@ const StudentInfoTable = () => {
     onCreatingRowSave: handleCreateStudentInfo,
     onEditingRowCancel: () => setValidationErrors({}),
     onEditingRowSave: handleSaveStudentInfo,
-    //optionally customize modal content
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
         <DialogTitle variant="h3">Create New StudentInfo</DialogTitle>
@@ -299,7 +213,6 @@ const StudentInfoTable = () => {
         </DialogActions>
       </>
     ),
-    //optionally customize modal content
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
         <DialogTitle variant="h3">Edit StudentInfo</DialogTitle>
@@ -338,13 +251,9 @@ const StudentInfoTable = () => {
       <Button
         variant="contained"
         onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
+          // table.setCreatingRow(true); //simplest way to open the create row modal with no default values
           //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
+          table.setCreatingRow(createRow(table), {});
         }}
       >
         Add Student
@@ -375,40 +284,102 @@ const StudentInfoTable = () => {
 
 //CREATE hook (post new user to api)
 function useCreateStudentInfo() {
+  const { getToken } = useAuth();
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (user: StudentInfo) => {
-      //send api update request here
-      console.log('user: ' + user);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newStudentInfoInfo: StudentInfo) => {
-      queryClient.setQueryData(
-        ['users'],
-        (prevStudentInfos: any) =>
-          [
-            ...prevStudentInfos,
-            {
-              ...newStudentInfoInfo,
-              id: (Math.random() + 1).toString(36).substring(7),
-            },
-          ] as StudentInfo[]
+    mutationFn: async (student: StudentInfo) => {
+      console.log(
+        JSON.stringify({
+          firstName: student.firstName,
+          lastName: student.lastName,
+          iepDate: student.iepDate,
+          evalDate: student.evalDate,
+          school: student.school,
+          therapyType: student.therapyType,
+          teacher: student.teacher,
+          roomNumber: student.roomNumber,
+          gradeLevel: student.gradeLevel,
+          dob: student.dob,
+        })
       );
+      const response = await fetch(
+        'http://localhost:8080/listen/createPatient',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: student.firstName,
+            lastName: student.lastName,
+            iepDate: student.iepDate,
+            evalDate: student.evalDate,
+            school: student.school,
+            therapyType: student.therapyType,
+            teacher: student.teacher,
+            roomNumber: student.roomNumber,
+            gradeLevel: student.gradeLevel,
+            dob: student.dob,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to create patient');
+      }
+
+      return response.json();
     },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
+    onSuccess: () => {
+      // Invalidate and refetch the patients list
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
   });
 }
 
-//READ hook (get users from api)
 function useGetStudentInfos() {
+  const { getToken } = useAuth();
+
   return useQuery<StudentInfo[]>({
     queryKey: ['users'],
     queryFn: async () => {
-      //send api request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve(fakeData);
+      const response = await fetch(
+        'http://localhost:8080/listen/getMyPatients',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      return data.map(
+        (patient: any): StudentInfo => ({
+          id: patient.id?.toString() || '',
+          firstName: patient.firstName || '',
+          lastName: patient.lastName || '',
+          iepDate: patient.iepDate
+            ? new Date(patient.iepDate).toLocaleDateString()
+            : '',
+          evalDate: patient.evalDate
+            ? new Date(patient.evalDate).toLocaleDateString()
+            : '',
+          school: patient.school || '',
+          therapyType: patient.therapyType || '',
+          teacher: patient.teacher || '',
+          roomNumber: patient.roomNumber?.toString() || '',
+          gradeLevel: patient.gradeLevel?.toString() || '',
+          dob: patient.dob ? new Date(patient.dob).toLocaleDateString() : '',
+        })
+      );
     },
     refetchOnWindowFocus: false,
   });

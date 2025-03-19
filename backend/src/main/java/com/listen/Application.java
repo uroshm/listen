@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories("com.listen.repositories")
-@EntityScan("com.listen.data")
+@EntityScan("com.listen.entity")
 @ComponentScan("com.listen")
 public class Application {
   public static void main(String[] args) {

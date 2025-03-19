@@ -18,8 +18,8 @@ export type StudentInfo = {
   school: string;
   therapyType: string;
   teacher: string;
-  roomNumber: number;
-  gradeLevel: number;
+  roomNumber: number | string;
+  gradeLevel: number | string;
   dob: string;
 };
 

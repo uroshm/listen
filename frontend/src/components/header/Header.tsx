@@ -42,14 +42,6 @@ const Header = () => {
   return (
     <header className="header">
       <nav className="nav-container">
-        <div className="logo">
-          <img
-            src="/logo.png"
-            alt="Company Logo"
-            onClick={() => navigate('/home')}
-          />
-        </div>
-
         <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           <motion.button
             initial="default"
