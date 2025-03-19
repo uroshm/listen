@@ -327,7 +327,9 @@ const StudentInfoTable = () => {
         </Tooltip>
         <Tooltip title="Test Student">
           <IconButton onClick={() => handleStudentTest(row.original)}>
-            <span role="img" aria-label="test">🧪</span>
+            <span role="img" aria-label="test">
+              🧪
+            </span>
           </IconButton>
         </Tooltip>
       </Box>
