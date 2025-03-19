@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.listen.data.Widget;
-import com.listen.repositories.WidgetRepository;
+import com.listen.data.Patient;
+import com.listen.repositories.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ListenService {
 
-  private final WidgetRepository widgetRepository;
+  private final PatientRepository patientRepository;
 
-  public List<Widget> getAllWidgets() {
-    return widgetRepository.findAll();
+  public List<Patient> getAllPatients() {
+    return patientRepository.findAll();
   }
 }

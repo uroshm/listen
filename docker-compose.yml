@@ -16,20 +16,20 @@ services:
     ports:
       - 8080:8080
 
-  analysis:
-    depends_on:
-      - backend
-    build:
-      context: ./analysis
-      dockerfile: Dockerfile
-    ports:
-      - 8000:8000
+  # analysis:
+  #   depends_on:
+  #     - backend
+  #   build:
+  #     context: ./analysis
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8000:8000
 
-  frontend:
-    depends_on:
-      - backend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - 5173:5173
+  # frontend:
+  #   depends_on:
+  #     - backend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 5173:5173

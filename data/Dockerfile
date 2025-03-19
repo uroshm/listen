@@ -2,8 +2,8 @@
 FROM postgres:latest
 
 # Set environment variables for PostgreSQL
-ENV POSTGRES_USER=widget_user
-ENV POSTGRES_PASSWORD=widget_password
+ENV POSTGRES_USER=user
+ENV POSTGRES_PASSWORD=password
 ENV POSTGRES_DB=listen_db
 ENV POSTGRES_HOST_AUTH_METHOD=trust
 
