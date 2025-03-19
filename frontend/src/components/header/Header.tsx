@@ -15,8 +15,6 @@ const Header = () => {
     pressed: { scale: 0.95, backgroundColor: '#e0e0e0' },
   };
 
-  const [showServicesDropdown, setShowServicesDropdown] = useState(false);
-
   const handleAuthClick = () => {
     if (getToken()) {
       logout();
@@ -28,19 +26,13 @@ const Header = () => {
 
   const serviceLinks = [
     {
-      title: 'Speech Recognition',
-      description: 'AI-powered analysis for accurate speech assessment',
-      icon: '🎯',
-      path: '/record',
-    },
-    {
-      title: 'Patient Management',
+      title: 'Patients',
       description: 'Track and monitor patient progress',
       icon: '👥',
       path: '/caseload',
     },
     {
-      title: 'Analytics Dashboard',
+      title: 'Analytics',
       description: 'Visualize patient outcomes and practice metrics',
       icon: '📊',
       path: '/analytics',
@@ -69,48 +61,19 @@ const Header = () => {
           >
             <i className="fas fa-home"></i> Home
           </motion.button>
-          <div
-            className="services-container"
-            onMouseEnter={() => setShowServicesDropdown(true)}
-            onMouseLeave={() => setShowServicesDropdown(false)}
-          >
+          {serviceLinks.map((service, index) => (
             <motion.button
+              key={index}
+              initial="default"
+              whileHover="hover"
+              whileTap="pressed"
+              variants={buttonVariants}
               className="nav-link"
-              initial={{ backgroundColor: 'transparent' }}
-              whileHover={{ backgroundColor: 'rgba(0,0,0,0.04)' }}
+              onClick={() => navigate(service.path)}
             >
-              <span>Services</span>
-              <i
-                className="fas fa-chevron-down"
-                style={{ fontSize: '12px', marginLeft: '4px' }}
-              ></i>
+              <span>{service.icon}</span> {service.title}
             </motion.button>
-
-            {showServicesDropdown && (
-              <div className="mega-dropdown">
-                <div className="dropdown-header">
-                  <h3>Services & Tools</h3>
-                  <p>Everything you need for speech therapy management</p>
-                </div>
-                <div className="dropdown-grid">
-                  {serviceLinks.map((service, index) => (
-                    <motion.a
-                      key={index}
-                      href={service.path}
-                      className="dropdown-item-large"
-                      whileHover={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
-                    >
-                      <span className="item-icon">{service.icon}</span>
-                      <div className="item-content">
-                        <h4>{service.title}</h4>
-                        <p>{service.description}</p>
-                      </div>
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          ))}
           <motion.button
             initial="default"
             whileHover="hover"
@@ -119,7 +82,7 @@ const Header = () => {
             className="nav-link"
             onClick={() => navigate('/contact')}
           >
-            <i className="fas fa-envelope"></i> Contact Us
+            <i className="fas fa-paper-plane"></i> Contact Us
           </motion.button>
           <motion.button
             initial="default"

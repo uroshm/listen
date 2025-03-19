@@ -325,6 +325,11 @@ const StudentInfoTable = () => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
+        <Tooltip title="Test Student">
+          <IconButton onClick={() => handleStudentTest(row.original)}>
+            <span role="img" aria-label="test">🧪</span>
+          </IconButton>
+        </Tooltip>
       </Box>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
@@ -352,6 +357,13 @@ const StudentInfoTable = () => {
     },
   });
   const { getToken } = useAuth();
+
+  // Add a function to handle student testing
+  const handleStudentTest = (student: StudentInfo) => {
+    console.log('Testing student:', student);
+    // Add more logic here, such as navigating to a test page or starting a test for the specific student
+  };
+
   return getToken() ? (
     <MaterialReactTable table={table} />
   ) : (

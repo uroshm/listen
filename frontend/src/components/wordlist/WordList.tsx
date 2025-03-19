@@ -35,6 +35,7 @@ const WordList: React.FC = () => {
     audioContext: AudioContext,
     analyser: AnalyserNode
   ) => {
+    if(!getToken()) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const source = audioContext.createMediaStreamSource(stream);
@@ -162,6 +163,7 @@ const WordList: React.FC = () => {
   };
 
   useEffect(() => {
+    if(!getToken) return;
     generateWordSequence(); // Generate words immediately on mount
 
     const audioContext = new (window.AudioContext ||
@@ -210,7 +212,7 @@ const WordList: React.FC = () => {
     }
   };
 
-  return (
+  return (getToken() ? 
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       {!isAnalyzing && !isRecording && (
         <h3>
@@ -303,7 +305,7 @@ const WordList: React.FC = () => {
         </>
       )}
     </div>
-  );
+  : <p>Not logged in!</p>);
 };
 
 export default WordList;
