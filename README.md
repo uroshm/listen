@@ -57,6 +57,3 @@ To run the entire application using Docker, use the following command:
 ```sh
 docker-compose up
 ```
-
-## License
-This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
