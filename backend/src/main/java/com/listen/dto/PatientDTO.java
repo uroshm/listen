@@ -14,7 +14,7 @@ public record PatientDTO(
     String roomNumber,
     String gradeLevel,
     String dob) {
-  // Convert DTO to Entity
+
   public Patient toEntity(ListenUser user) {
     Patient patient = new Patient();
     patient.setFirstName(firstName);
@@ -29,5 +29,19 @@ public record PatientDTO(
     patient.setDob(dob);
     patient.setUser(user);
     return patient;
+  }
+
+  public Patient toUpdateEntity(Patient existingPatient) {
+    existingPatient.setFirstName(firstName);
+    existingPatient.setLastName(lastName);
+    existingPatient.setIepDate(iepDate);
+    existingPatient.setEvalDate(evalDate);
+    existingPatient.setSchool(school);
+    existingPatient.setTherapyType(therapyType);
+    existingPatient.setTeacher(teacher);
+    existingPatient.setRoomNumber(roomNumber);
+    existingPatient.setGradeLevel(gradeLevel);
+    existingPatient.setDob(dob);
+    return existingPatient;
   }
 }
