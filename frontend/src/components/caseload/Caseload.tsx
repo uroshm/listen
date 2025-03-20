@@ -28,14 +28,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from '../../auth/AuthContext';
 
-const StudentInfoTable = () => {
+const PatientInfoTable = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
 
-  const [studentInfo, setStudentInfo] = useState<StudentInfo[]>([]);
+  const [patientInfo] = useState<PatientInfo[]>([]);
 
-  const columns = useMemo<MRT_ColumnDef<StudentInfo>[]>(
+  const columns = useMemo<MRT_ColumnDef<PatientInfo>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -135,57 +135,57 @@ const StudentInfoTable = () => {
   );
 
   //call CREATE hook
-  const { mutateAsync: createStudentInfo, isPending: isCreatingStudentInfo } =
-    useCreateStudentInfo();
+  const { mutateAsync: createPatientInfo, isPending: isCreatingPatientInfo } =
+    useCreatePatientInfo();
   const {
-    data = studentInfo,
-    isError: isLoadingStudentInfosError,
-    isFetching: isFetchingStudentInfos,
-    isLoading: isLoadingStudentInfos,
-  } = useGetStudentInfos();
-  const { mutateAsync: updateStudentInfo, isPending: isUpdatingStudentInfo } =
-    useUpdateStudentInfo();
-  const { mutateAsync: deleteStudentInfo, isPending: isDeletingStudentInfo } =
-    useDeleteStudentInfo();
+    data = patientInfo,
+    isError: isLoadingPatientInfosError,
+    isFetching: isFetchingPatientInfos,
+    isLoading: isLoadingPatientInfos,
+  } = useGetPatientInfos();
+  const { mutateAsync: updatePatientInfo, isPending: isUpdatingPatientInfo } =
+    useUpdatePatientInfo();
+  const { mutateAsync: deletePatientInfo, isPending: isDeletingPatientInfo } =
+    useDeletePatientInfo();
 
-  const handleCreateStudentInfo: MRT_TableOptions<StudentInfo>['onCreatingRowSave'] =
+  const handleCreatePatientInfo: MRT_TableOptions<PatientInfo>['onCreatingRowSave'] =
     async ({ values, table }) => {
-      const newValidationErrors = validateStudentInfo(values);
+      const newValidationErrors = validatePatientInfo(values);
       if (Object.values(newValidationErrors).some((error) => error)) {
         setValidationErrors(newValidationErrors);
         return;
       }
       setValidationErrors({});
-      await createStudentInfo(values);
+      await createPatientInfo(values);
       table.setCreatingRow(null); //exit creating mode
     };
 
-  const handleSaveStudentInfo: MRT_TableOptions<StudentInfo>['onEditingRowSave'] =
+  const handleSavePatientInfo: MRT_TableOptions<PatientInfo>['onEditingRowSave'] =
     async ({ values, table }) => {
-      const newValidationErrors = validateStudentInfo(values);
+      const newValidationErrors = validatePatientInfo(values);
       if (Object.values(newValidationErrors).some((error) => error)) {
         setValidationErrors(newValidationErrors);
         return;
       }
       setValidationErrors({});
-      await updateStudentInfo(values);
+      await updatePatientInfo(values);
       table.setEditingRow(null); //exit editing mode
     };
 
-  const openDeleteConfirmModal = (row: MRT_Row<StudentInfo>) => {
+  const openDeleteConfirmModal = (row: MRT_Row<PatientInfo>) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      deleteStudentInfo(row.original.id);
+      deletePatientInfo(row.original.id);
     }
   };
 
   const table = useMaterialReactTable({
     columns,
-    data: data as StudentInfo[],
+    data: data as PatientInfo[],
     createDisplayMode: 'modal',
     editDisplayMode: 'modal',
     enableEditing: true,
     getRowId: (row) => row.id,
-    muiToolbarAlertBannerProps: isLoadingStudentInfosError
+    muiToolbarAlertBannerProps: isLoadingPatientInfosError
       ? {
           color: 'error',
           children: 'Error loading data',
@@ -197,12 +197,12 @@ const StudentInfoTable = () => {
       },
     },
     onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateStudentInfo,
+    onCreatingRowSave: handleCreatePatientInfo,
     onEditingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveStudentInfo,
+    onEditingRowSave: handleSavePatientInfo,
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h3">Create New StudentInfo</DialogTitle>
+        <DialogTitle variant="h3">Create New PatientInfo</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
         >
@@ -215,7 +215,7 @@ const StudentInfoTable = () => {
     ),
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h3">Edit StudentInfo</DialogTitle>
+        <DialogTitle variant="h3">Edit PatientInfo</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
         >
@@ -238,8 +238,8 @@ const StudentInfoTable = () => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Test Student">
-          <IconButton onClick={() => handleStudentTest(row.original)}>
+        <Tooltip title="Test Patient">
+          <IconButton onClick={() => handlePatientTest(row.original)}>
             <span role="img" aria-label="test">
               🧪
             </span>
@@ -253,26 +253,24 @@ const StudentInfoTable = () => {
         onClick={() => {
           // table.setCreatingRow(true); //simplest way to open the create row modal with no default values
           //or you can pass in a row object to set default values with the `createRow` helper function
-          table.setCreatingRow(createRow(table), {});
+          table.setCreatingRow(createRow(table));
         }}
       >
-        Add Student
+        Add Patient
       </Button>
     ),
     state: {
-      isLoading: isLoadingStudentInfos,
+      isLoading: isLoadingPatientInfos,
       isSaving:
-        isCreatingStudentInfo || isUpdatingStudentInfo || isDeletingStudentInfo,
-      showAlertBanner: isLoadingStudentInfosError,
-      showProgressBars: isFetchingStudentInfos,
+        isCreatingPatientInfo || isUpdatingPatientInfo || isDeletingPatientInfo,
+      showAlertBanner: isLoadingPatientInfosError,
+      showProgressBars: isFetchingPatientInfos,
     },
   });
   const { getToken } = useAuth();
 
-  // Add a function to handle student testing
-  const handleStudentTest = (student: StudentInfo) => {
-    console.log('Testing student:', student);
-    // Add more logic here, such as navigating to a test page or starting a test for the specific student
+  const handlePatientTest = (patient: PatientInfo) => {
+    console.log('Testing patient:', patient);
   };
 
   return getToken() ? (
@@ -283,45 +281,35 @@ const StudentInfoTable = () => {
 };
 
 //CREATE hook (post new user to api)
-function useCreateStudentInfo() {
+function useCreatePatientInfo() {
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (student: StudentInfo) => {
-      console.log(
-        JSON.stringify({
-          firstName: student.firstName,
-          lastName: student.lastName,
-          iepDate: student.iepDate,
-          evalDate: student.evalDate,
-          school: student.school,
-          therapyType: student.therapyType,
-          teacher: student.teacher,
-          roomNumber: student.roomNumber,
-          gradeLevel: student.gradeLevel,
-          dob: student.dob,
-        })
-      );
+    mutationFn: async (patient: PatientInfo) => {
+      const token = getToken();
+      if (!token) {
+        throw new Error('No authentication token found.');
+      }
       const response = await fetch(
         'http://localhost:8080/listen/createPatient',
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            firstName: student.firstName,
-            lastName: student.lastName,
-            iepDate: student.iepDate,
-            evalDate: student.evalDate,
-            school: student.school,
-            therapyType: student.therapyType,
-            teacher: student.teacher,
-            roomNumber: student.roomNumber,
-            gradeLevel: student.gradeLevel,
-            dob: student.dob,
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            iepDate: patient.iepDate,
+            evalDate: patient.evalDate,
+            school: patient.school,
+            therapyType: patient.therapyType,
+            teacher: patient.teacher,
+            roomNumber: patient.roomNumber,
+            gradeLevel: patient.gradeLevel,
+            dob: patient.dob,
           }),
         }
       );
@@ -338,10 +326,10 @@ function useCreateStudentInfo() {
   });
 }
 
-function useGetStudentInfos() {
+function useGetPatientInfos() {
   const { getToken } = useAuth();
 
-  return useQuery<StudentInfo[]>({
+  return useQuery<PatientInfo[]>({
     queryKey: ['users'],
     queryFn: async () => {
       const response = await fetch(
@@ -362,7 +350,7 @@ function useGetStudentInfos() {
       const data = await response.json();
 
       return data.map(
-        (patient: any): StudentInfo => ({
+        (patient: any): PatientInfo => ({
           id: patient.id?.toString() || '',
           firstName: patient.firstName || '',
           lastName: patient.lastName || '',
@@ -385,23 +373,54 @@ function useGetStudentInfos() {
   });
 }
 
-//UPDATE hook (put user in api)
-function useUpdateStudentInfo() {
+function useUpdatePatientInfo() {
+  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (user: StudentInfo) => {
-      //send api update request here
-      console.log('user: ' + user);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
+    mutationFn: async (patient: PatientInfo) => {
+      const token = getToken();
+      if (!token) {
+        throw new Error('No authentication token found.');
+      }
+      const response = await fetch(
+        `http://localhost:8080/listen/editPatient/${patient.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: patient.id,
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            iepDate: patient.iepDate,
+            evalDate: patient.evalDate,
+            school: patient.school,
+            therapyType: patient.therapyType,
+            teacher: patient.teacher,
+            roomNumber: patient.roomNumber,
+            gradeLevel: patient.gradeLevel,
+            dob: patient.dob,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to edit patient');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate and refetch the patients list after successful update
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     //client side optimistic update
-    onMutate: (newStudentInfoInfo: StudentInfo) => {
-      queryClient.setQueryData(['users'], (prevStudentInfos: any) =>
-        prevStudentInfos?.map((prevStudentInfo: StudentInfo) =>
-          prevStudentInfo.id === newStudentInfoInfo.id
-            ? newStudentInfoInfo
-            : prevStudentInfo
+    onMutate: (newPatientInfoInfo: PatientInfo) => {
+      queryClient.setQueryData(['users'], (prevPatientInfos: any) =>
+        prevPatientInfos?.map((prevPatientInfo: PatientInfo) =>
+          prevPatientInfo.id === newPatientInfoInfo.id
+            ? newPatientInfoInfo
+            : prevPatientInfo
         )
       );
     },
@@ -410,7 +429,7 @@ function useUpdateStudentInfo() {
 }
 
 //DELETE hook (delete user in api)
-function useDeleteStudentInfo() {
+function useDeletePatientInfo() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (userId: string) => {
@@ -421,8 +440,8 @@ function useDeleteStudentInfo() {
     },
     //client side optimistic update
     onMutate: (userId: string) => {
-      queryClient.setQueryData(['users'], (prevStudentInfos: any) =>
-        prevStudentInfos?.filter((user: StudentInfo) => user.id !== userId)
+      queryClient.setQueryData(['users'], (prevPatientInfos: any) =>
+        prevPatientInfos?.filter((user: PatientInfo) => user.id !== userId)
       );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
@@ -430,20 +449,20 @@ function useDeleteStudentInfo() {
 }
 
 //react query setup in App.tsx
-import { StudentInfo } from '../../utils';
+import { PatientInfo } from '../../utils';
 
 const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <StudentInfoTable />
+      <PatientInfoTable />
       <Suspense fallback={null}></Suspense>
     </QueryClientProvider>
   );
 }
 
 const validateRequired = (value: string) => !!value.length;
-function validateStudentInfo(user: StudentInfo) {
+function validatePatientInfo(user: PatientInfo) {
   return {
     firstName: !validateRequired(user.firstName)
       ? 'First Name is Required'

@@ -9,7 +9,7 @@ export const sentencesByFile: SentenceByFile[] = [
   { key: 'hiThere.wav', value: 'Hi there!' },
 ];
 
-export type StudentInfo = {
+export type PatientInfo = {
   id: string;
   firstName: string;
   lastName: string;
