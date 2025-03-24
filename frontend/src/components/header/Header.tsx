@@ -26,16 +26,16 @@ const Header = () => {
 
   const serviceLinks = [
     {
-      title: 'Patients',
+      title: 'My Patients',
       description: 'Track and monitor patient progress',
       icon: '👥',
       path: '/caseload',
     },
     {
-      title: 'Analytics',
+      title: 'Test Results',
       description: 'Visualize patient outcomes and practice metrics',
       icon: '📊',
-      path: '/analytics',
+      path: '/tests',
     },
   ];
 

@@ -31,6 +31,7 @@ import {
 } from '@tanstack/react-query';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,7 +63,7 @@ const TestConfigModal: React.FC<TestConfigModalProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Configure Test</DialogTitle>
+      <DialogTitle>Assign Test</DialogTitle>
       <DialogContent>
         <Box
           sx={{
@@ -82,7 +83,6 @@ const TestConfigModal: React.FC<TestConfigModalProps> = ({
                 setTestConfig({ ...testConfig, testName: e.target.value })
               }
             >
-              <MenuItem value="initial">Combination</MenuItem>
               <MenuItem value="initial">Initial Sound Test</MenuItem>
               <MenuItem value="final">Final Sound Test</MenuItem>
               <MenuItem value="medial">Medial Sound Test</MenuItem>
@@ -109,7 +109,7 @@ const TestConfigModal: React.FC<TestConfigModalProps> = ({
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button onClick={handleSubmit} variant="contained">
-          Start Test
+          Save
         </Button>
       </DialogActions>
     </Dialog>
@@ -125,12 +125,12 @@ const PatientInfoTable = () => {
 
   const columns = useMemo<MRT_ColumnDef<PatientInfo>[]>(
     () => [
-      {
-        accessorKey: 'id',
-        header: 'Id',
-        enableEditing: false,
-        size: 80,
-      },
+      // {
+      //   accessorKey: 'id',
+      //   header: 'Id',
+      //   enableEditing: false,
+      //   size: 80,
+      // },
       {
         accessorKey: 'firstName',
         header: 'First Name',
@@ -290,7 +290,6 @@ const PatientInfoTable = () => {
     onEditingRowSave: handleSavePatientInfo,
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h3">Create New PatientInfo</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
         >
@@ -326,11 +325,19 @@ const PatientInfoTable = () => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Test Patient">
+        <Tooltip title="Assign Patient a Test">
           <IconButton onClick={() => handlePatientTest(row.original)}>
             <span role="img" aria-label="test">
               🧪
             </span>
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="View Tests">
+          <IconButton
+            onClick={() => handleViewTests(row.original)}
+            color="info"
+          >
+            <VisibilityIcon />
           </IconButton>
         </Tooltip>
       </Box>
@@ -377,6 +384,14 @@ const PatientInfoTable = () => {
         },
       });
     }
+  };
+
+  const handleViewTests = (patient: PatientInfo) => {
+    navigate('/tests', {
+      state: {
+        patient: patient,
+      },
+    });
   };
 
   return getToken() ? (
