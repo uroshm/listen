@@ -23,7 +23,7 @@ public class AuthController {
   record RegisterRequest(String username, String password) {}
 
   @PostMapping("/register")
-  @CrossOrigin("http://localhost:5173")
+  @CrossOrigin("http://localhost:8081")
   public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
     return authService.registerUser(registerRequest.username(), registerRequest.password());
   }
@@ -31,7 +31,7 @@ public class AuthController {
   record AuthRequest(String username, String password) {}
 
   @PostMapping(path = "/login")
-  @CrossOrigin("http://localhost:5173")
+  @CrossOrigin("http://localhost:8081")
   public ResponseEntity<?> authenticate(@RequestBody AuthRequest authRequest) {
     if (authService.isAuthenticated(authRequest.username(), authRequest.password())) {
       return new ResponseEntity<>(jwtService.generateToken(authRequest.username()), HttpStatus.OK);

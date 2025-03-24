@@ -32,16 +32,16 @@ public class ListenController {
   private final ListenService listenService;
   private final AuthService authService;
 
-  @CrossOrigin(origins = "http://localhost:5173")
+  @CrossOrigin(origins = "http://localhost:8081")
   @GetMapping("/getMyPatients")
   @PreAuthorize("hasAuthority('ROLE_USER')")
-  public List<Patient> getAllPatients(Authentication authentication) {
+  public List<PatientDTO> getAllPatients(Authentication authentication) {
     var username = authentication.getName();
     var currentUser = authService.findByUsername(username);
     return listenService.getPatientsByUser(currentUser);
   }
 
-  @CrossOrigin(origins = "http://localhost:5173")
+  @CrossOrigin(origins = "http://localhost:8081")
   @PostMapping("/createPatient")
   @PreAuthorize("hasAuthority('ROLE_USER')")
   public ResponseEntity<Patient> createPatient(
@@ -52,7 +52,7 @@ public class ListenController {
     return ResponseEntity.ok(savedPatient);
   }
 
-  @CrossOrigin(origins = "http://localhost:5173")
+  @CrossOrigin(origins = "http://localhost:8081")
   @PutMapping("/editPatient/{id}")
   @PreAuthorize("hasAuthority('ROLE_USER')")
   public ResponseEntity<Patient> editPatient(
