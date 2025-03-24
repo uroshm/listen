@@ -16,6 +16,11 @@ import {
   DialogTitle,
   IconButton,
   Tooltip,
+  Dialog,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import {
   QueryClient,
@@ -27,6 +32,89 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from '../../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+interface TestConfig {
+  testName: string;
+  speechSound: string;
+}
+
+interface TestConfigModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (config: TestConfig) => void;
+}
+
+const TestConfigModal: React.FC<TestConfigModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+}) => {
+  const [testConfig, setTestConfig] = useState<TestConfig>({
+    testName: '',
+    speechSound: '',
+  });
+
+  const handleSubmit = () => {
+    onSubmit(testConfig);
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Configure Test</DialogTitle>
+      <DialogContent>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: 300,
+            mt: 2,
+          }}
+        >
+          <FormControl fullWidth>
+            <InputLabel>Test Name</InputLabel>
+            <Select
+              value={testConfig.testName}
+              label="Test Name"
+              onChange={(e) =>
+                setTestConfig({ ...testConfig, testName: e.target.value })
+              }
+            >
+              <MenuItem value="initial">Combination</MenuItem>
+              <MenuItem value="initial">Initial Sound Test</MenuItem>
+              <MenuItem value="final">Final Sound Test</MenuItem>
+              <MenuItem value="medial">Medial Sound Test</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Speech Sound</InputLabel>
+            <Select
+              value={testConfig.speechSound}
+              label="Speech Sound"
+              onChange={(e) =>
+                setTestConfig({ ...testConfig, speechSound: e.target.value })
+              }
+            >
+              <MenuItem value="r">/r/</MenuItem>
+              <MenuItem value="s">/s/</MenuItem>
+              <MenuItem value="l">/l/</MenuItem>
+              <MenuItem value="th">/th/</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained">
+          Start Test
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const PatientInfoTable = () => {
   const [validationErrors, setValidationErrors] = useState<
@@ -269,12 +357,37 @@ const PatientInfoTable = () => {
   });
   const { getToken } = useAuth();
 
+  const navigate = useNavigate();
+  const [testModalOpen, setTestModalOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<PatientInfo | null>(
+    null
+  );
+
   const handlePatientTest = (patient: PatientInfo) => {
-    console.log('Testing patient:', patient);
+    setSelectedPatient(patient);
+    setTestModalOpen(true);
+  };
+
+  const handleTestConfigSubmit = (config: TestConfig) => {
+    if (selectedPatient) {
+      navigate('/wordlist', {
+        state: {
+          patient: selectedPatient,
+          testConfig: config,
+        },
+      });
+    }
   };
 
   return getToken() ? (
-    <MaterialReactTable table={table} />
+    <>
+      <MaterialReactTable table={table} />
+      <TestConfigModal
+        open={testModalOpen}
+        onClose={() => setTestModalOpen(false)}
+        onSubmit={handleTestConfigSubmit}
+      />
+    </>
   ) : (
     <p>Not logged in!</p>
   );

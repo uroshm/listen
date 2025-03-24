@@ -6,6 +6,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { useLocation } from 'react-router-dom';
+import { Box, Chip, Paper, Typography } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import ScienceIcon from '@mui/icons-material/Science';
 
 interface WordSlide {
   title: string;
@@ -15,6 +19,9 @@ interface WordSlide {
 }
 
 const WordList: React.FC = () => {
+  const location = useLocation();
+  const { patient, testConfig } = location.state || {};
+
   const [slides, setSlides] = useState<WordSlide[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -214,6 +221,48 @@ const WordList: React.FC = () => {
 
   return getToken() ? (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: 2,
+          mb: 3,
+          bgcolor: 'background.paper',
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          alignItems: { xs: 'flex-start', sm: 'center' },
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <PersonIcon color="primary" />
+          <Typography variant="subtitle1" component="span">
+            Patient:
+          </Typography>
+          <Chip
+            label={`${patient?.firstName} ${patient?.lastName}`}
+            color="primary"
+            variant="outlined"
+          />
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <ScienceIcon color="secondary" />
+          <Typography variant="subtitle1" component="span">
+            Test:
+          </Typography>
+          <Chip
+            label={`${testConfig?.testName || 'Not set'}`}
+            color="secondary"
+            variant="outlined"
+          />
+          <Chip
+            label={`Sound: ${testConfig?.speechSound || 'Not set'}`}
+            color="secondary"
+            variant="outlined"
+          />
+        </Box>
+      </Paper>
+
       {!isAnalyzing && !isRecording && (
         <h3>
           Click the "Start Recording" button, and say whatever word you see on
