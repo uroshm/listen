@@ -46,4 +46,21 @@ CREATE TABLE IF NOT EXISTS "user_schema"."patients" (
     DOB TEXT
 );
 
+CREATE TABLE IF NOT EXISTS "user_schema"."tests" (
+    ID SERIAL PRIMARY KEY,
+    PATIENT_ID INT,
+    CONSTRAINT fk_patient
+      FOREIGN KEY (PATIENT_ID)
+      REFERENCES "user_schema"."patients" (ID)
+      ON DELETE CASCADE,
+    TEST_NAME TEXT,
+    TEST_TYPE TEXT,
+    TEST_DETAILS TEXT,
+    TEST_DATE TEXT,
+    TEST_DATA TEXT,
+    TEST_AUDIO BYTEA,
+    TEST_ANALYSIS TEXT
+);
+
 GRANT ALL PRIVILEGES ON TABLE "user_schema"."patients" TO "user";
+GRANT ALL PRIVILEGES ON TABLE "user_schema"."tests" TO "user";

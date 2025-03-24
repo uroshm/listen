@@ -1,5 +1,7 @@
 package com.listen.entity;
 
+import com.listen.dto.PatientDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -56,4 +58,18 @@ public class Patient {
 
   @Column(name = "DOB")
   private String dob;
+
+  public PatientDTO convertToDTO() {
+    return new PatientDTO(
+        firstName,
+        lastName,
+        iepDate,
+        evalDate,
+        school,
+        therapyType,
+        teacher,
+        roomNumber,
+        gradeLevel,
+        dob);
+  }
 }

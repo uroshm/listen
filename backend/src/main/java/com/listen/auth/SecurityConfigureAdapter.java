@@ -41,8 +41,7 @@ public class SecurityConfigureAdapter {
                 auth.requestMatchers("/auth/register", "/auth/login")
                     .permitAll()
                     .anyRequest()
-                    .authenticated() // Protect all other endpoints
-            )
+                    .authenticated())
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
