@@ -9,6 +9,11 @@ const Header = () => {
   const navigate = useNavigate();
   const { getToken, logout, username } = useAuth();
 
+  const logoVariants = {
+    default: { scale: 1 },
+    hover: { scale: 1.05, rotate: 2 },
+  };
+
   const buttonVariants = {
     default: { scale: 1, backgroundColor: '#ffffff' },
     hover: { scale: 1.05, backgroundColor: '#f0f0f0' },
@@ -42,56 +47,71 @@ const Header = () => {
   return (
     <header className="header">
       <nav className="nav-container">
+        <motion.div
+          className="logo-container"
+          initial="default"
+          whileHover="hover"
+          variants={logoVariants}
+          onClick={() => navigate('/home')}
+        >
+          <img src="logo.png" alt="Listen Logo" className="header-logo" />
+        </motion.div>
+
         <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-          <motion.button
-            initial="default"
-            whileHover="hover"
-            whileTap="pressed"
-            variants={buttonVariants}
-            className="nav-link"
-            onClick={() => navigate('/home')}
-          >
-            <i className="fas fa-home"></i> Home
-          </motion.button>
-          {serviceLinks.map((service, index) => (
+          <div className="main-links">
             <motion.button
-              key={index}
               initial="default"
               whileHover="hover"
               whileTap="pressed"
               variants={buttonVariants}
               className="nav-link"
-              onClick={() => navigate(service.path)}
+              onClick={() => navigate('/home')}
             >
-              <span>{service.icon}</span> {service.title}
+              <i className="fas fa-home"></i> Home
             </motion.button>
-          ))}
-          <motion.button
-            initial="default"
-            whileHover="hover"
-            whileTap="pressed"
-            variants={buttonVariants}
-            className="nav-link"
-            onClick={() => navigate('/contact')}
-          >
-            <i className="fas fa-paper-plane"></i> Contact Us
-          </motion.button>
-          <motion.button
-            initial="default"
-            whileHover="hover"
-            whileTap="pressed"
-            variants={buttonVariants}
-            className="nav-link"
-            onClick={handleAuthClick}
-          >
-            <i className={`fas fa-sign-${getToken() ? 'out' : 'in'}-alt`}></i>
-            {getToken() ? ' Log Out' : ' Log In'}
-          </motion.button>
-          {getToken() && username && (
-            <div className="user-info">
-              <span className="username">Welcome, {username}</span>
-            </div>
-          )}
+            {serviceLinks.map((service, index) => (
+              <motion.button
+                key={index}
+                initial="default"
+                whileHover="hover"
+                whileTap="pressed"
+                variants={buttonVariants}
+                className="nav-link"
+                onClick={() => navigate(service.path)}
+              >
+                <span>{service.icon}</span> {service.title}
+              </motion.button>
+            ))}
+          </div>
+
+          <div className="right-links">
+            <motion.button
+              initial="default"
+              whileHover="hover"
+              whileTap="pressed"
+              variants={buttonVariants}
+              className="nav-link"
+              onClick={() => navigate('/contact')}
+            >
+              <i className="fas fa-paper-plane"></i> Contact Us
+            </motion.button>
+            <motion.button
+              initial="default"
+              whileHover="hover"
+              whileTap="pressed"
+              variants={buttonVariants}
+              className="nav-link"
+              onClick={handleAuthClick}
+            >
+              <i className={`fas fa-sign-${getToken() ? 'out' : 'in'}-alt`}></i>
+              {getToken() ? ' Log Out' : ' Log In'}
+            </motion.button>
+            {getToken() && username && (
+              <div className="user-info">
+                <span className="username">Welcome, {username}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div
