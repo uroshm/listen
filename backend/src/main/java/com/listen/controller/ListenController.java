@@ -22,7 +22,6 @@ import com.listen.dto.PatientDTO;
 import com.listen.dto.PatientTestDTO;
 import com.listen.entity.ListenUser;
 import com.listen.entity.Patient;
-import com.listen.entity.PatientTest;
 import com.listen.services.ListenService;
 
 import lombok.RequiredArgsConstructor;
@@ -68,18 +67,33 @@ public class ListenController {
 
   @CrossOrigin(origins = "http://localhost:8081")
   @PostMapping(value = "/createTest", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  // @PreAuthorize("hasAuthority('ROLE_USER')")
+  @PreAuthorize("hasAuthority('ROLE_USER')")
   public ResponseEntity<PatientTestDTO> createTest(
       @RequestParam("file") MultipartFile file,
       PatientTestDTO patientTestDTO,
       Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
-    return ResponseEntity.ok(listenService.createTest(file, patientTestDTO));
+    return ResponseEntity.ok(listenService.createTest(file, patientTestDTO, currentUser));
   }
 
   @CrossOrigin(origins = "http://localhost:8081")
   @GetMapping("/getTests")
-  public ResponseEntity<List<PatientTest>> getTests() {
-    return ResponseEntity.ok(listenService.getTests());
+  @PreAuthorize("hasAuthority('ROLE_USER')")
+  public ResponseEntity<List<PatientTestDTO>> getTests(
+      @RequestParam(required = false) Long patientId, Authentication authentication) {
+
+    if (patientId != null) {
+      return ResponseEntity.ok(
+          listenService
+              .getTestsByPatientId(patientId, authService.findByUsername(authentication.getName()))
+              .stream()
+              .map(PatientTestDTO::fromEntity)
+              .toList());
+    } else {
+      return ResponseEntity.ok(
+          listenService.getTests(authService.findByUsername(authentication.getName())).stream()
+              .map(PatientTestDTO::fromEntity)
+              .toList());
+    }
   }
 }

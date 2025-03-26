@@ -70,11 +70,16 @@ public class ListenService {
     }
   }
 
-  public PatientTestDTO createTest(MultipartFile file, PatientTestDTO patientTestDTO) {
+  public PatientTestDTO createTest(
+      MultipartFile file, PatientTestDTO patientTestDTO, ListenUser user) {
     try {
       var patient =
           findPatientById(patientTestDTO.patientId())
               .orElseThrow(() -> new RuntimeException("Patient ID not provided"));
+      if (patient.getUser() != user) {
+        throw new RuntimeException("You are not authorized to create test for this patient.");
+      }
+
       var test = new PatientTest();
 
       test.setPatient(patient);
@@ -93,7 +98,18 @@ public class ListenService {
     }
   }
 
-  public List<PatientTest> getTests() {
-    return patientTestRepository.findAll();
+  public List<PatientTest> getTests(ListenUser user) {
+    return patientTestRepository.findAllByUser(user);
+  }
+
+  public List<PatientTest> getTestsByPatientId(Long patientId, ListenUser user) {
+    Patient patient =
+        findPatientById(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));
+
+    if (user != null) {
+      validateUser(user, patient);
+    }
+
+    return patientTestRepository.findByPatientId(patientId);
   }
 }

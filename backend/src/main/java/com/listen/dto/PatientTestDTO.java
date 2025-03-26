@@ -25,4 +25,16 @@ public record PatientTestDTO(
     test.setPatient(patient);
     return test;
   }
+
+  public static PatientTestDTO fromEntity(PatientTest test) {
+    return new PatientTestDTO(
+        test.getTestName(),
+        test.getTestType(),
+        test.getTestDetails(),
+        test.getTestDate(),
+        test.getTestData(),
+        test.getTestAudio(),
+        test.getTestAnalysis(),
+        test.getPatient().getId());
+  }
 }
