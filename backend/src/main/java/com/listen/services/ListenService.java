@@ -70,31 +70,23 @@ public class ListenService {
     }
   }
 
-  public PatientTest createTest(MultipartFile file) {
+  public PatientTestDTO createTest(MultipartFile file, PatientTestDTO patientTestDTO) {
     try {
-      var testDTO =
-          new PatientTestDTO(
-              "testName",
-              "testType",
-              "testDetails",
-              "testDate",
-              "testData",
-              file.getBytes(),
-              "testAnalysis",
-              new PatientDTO(
-                  "patientName",
-                  "patientAge",
-                  "patientGender",
-                  null,
-                  null,
-                  null,
-                  null,
-                  null,
-                  null,
-                  null));
-      Patient temp = new Patient();
-      patientRepository.save(temp);
-      return patientTestRepository.save(testDTO.toEntity(temp));
+      var patient =
+          findPatientById(patientTestDTO.patientId())
+              .orElseThrow(() -> new RuntimeException("Patient ID not provided"));
+      var test = new PatientTest();
+
+      test.setPatient(patient);
+      test.setTestName(patientTestDTO.testName());
+      test.setTestType(patientTestDTO.testType());
+      test.setTestDetails(patientTestDTO.testDetails());
+      test.setTestDate(patientTestDTO.testDate());
+      test.setTestData(patientTestDTO.testData());
+      test.setTestAudio(file.getBytes());
+      test.setTestAnalysis(patientTestDTO.testAnalysis());
+      patientTestRepository.save(test);
+      return patientTestDTO;
     } catch (Exception e) {
       log.error("Error creating test: {}", e.getMessage());
       throw new RuntimeException("Failed to create test", e);

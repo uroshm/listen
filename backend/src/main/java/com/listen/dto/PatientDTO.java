@@ -4,6 +4,7 @@ import com.listen.entity.ListenUser;
 import com.listen.entity.Patient;
 
 public record PatientDTO(
+    Long id,
     String firstName,
     String lastName,
     String iepDate,
@@ -17,6 +18,7 @@ public record PatientDTO(
 
   public Patient toEntity(ListenUser user) {
     Patient patient = new Patient();
+    patient.setId(id);
     patient.setFirstName(firstName);
     patient.setLastName(lastName);
     patient.setIepDate(iepDate);
@@ -32,6 +34,7 @@ public record PatientDTO(
   }
 
   public Patient toUpdateEntity(Patient existingPatient) {
+    existingPatient.setId(id);
     existingPatient.setFirstName(firstName);
     existingPatient.setLastName(lastName);
     existingPatient.setIepDate(iepDate);

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.listen.auth.AuthService;
 import com.listen.dto.PatientDTO;
+import com.listen.dto.PatientTestDTO;
 import com.listen.entity.ListenUser;
 import com.listen.entity.Patient;
 import com.listen.entity.PatientTest;
@@ -48,12 +49,12 @@ public class ListenController {
   @CrossOrigin(origins = "http://localhost:8081")
   @PostMapping("/createPatient")
   @PreAuthorize("hasAuthority('ROLE_USER')")
-  public ResponseEntity<Patient> createPatient(
+  public ResponseEntity<PatientDTO> createPatient(
       @RequestBody PatientDTO patientDTO, Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
     Patient patient = patientDTO.toEntity(currentUser);
-    Patient savedPatient = listenService.createPatient(patient);
-    return ResponseEntity.ok(savedPatient);
+    listenService.createPatient(patient);
+    return ResponseEntity.ok(patientDTO);
   }
 
   @CrossOrigin(origins = "http://localhost:8081")
@@ -68,13 +69,12 @@ public class ListenController {
   @CrossOrigin(origins = "http://localhost:8081")
   @PostMapping(value = "/createTest", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   // @PreAuthorize("hasAuthority('ROLE_USER')")
-  public ResponseEntity<PatientTest> createTest(
+  public ResponseEntity<PatientTestDTO> createTest(
       @RequestParam("file") MultipartFile file,
-      PatientDTO patientDTO,
+      PatientTestDTO patientTestDTO,
       Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
-    Patient patient = patientDTO.toEntity(currentUser);
-    return ResponseEntity.ok(listenService.createTest(file));
+    return ResponseEntity.ok(listenService.createTest(file, patientTestDTO));
   }
 
   @CrossOrigin(origins = "http://localhost:8081")

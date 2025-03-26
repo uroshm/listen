@@ -61,6 +61,7 @@ public class Patient {
 
   public PatientDTO convertToDTO() {
     return new PatientDTO(
+        id,
         firstName,
         lastName,
         iepDate,

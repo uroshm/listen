@@ -11,7 +11,7 @@ public record PatientTestDTO(
     String testData,
     byte[] testAudio,
     String testAnalysis,
-    PatientDTO patientDTO) {
+    Long patientId) {
 
   public PatientTest toEntity(Patient patient) {
     PatientTest test = new PatientTest();
