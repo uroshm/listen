@@ -4,22 +4,22 @@ import { motion } from 'framer-motion';
 const Home = () => {
   const features = [
     {
-      title: 'Speech Recognition',
+      title: 'Listen Copilot',
       description:
-        'Real-time analysis of speech patterns using advanced AI technology.',
+        'Real-time assistant providing analysis of speech patterns using advanced AI technology.',
       icon: '🎯',
     },
     {
-      title: 'Progress Tracking',
+      title: 'Automated Testing',
       description:
-        'Comprehensive tools to monitor and document client improvement.',
-      icon: '📈',
+        'Insightful and automated analytics with built-in tests to let you focus on what matters most, providing care and therapy.',
+      icon: '📊',
     },
     {
-      title: 'Data Analytics',
+      title: 'Security',
       description:
-        'Insightful analytics to make informed decisions about therapy.',
-      icon: '📊',
+        'Listen is built from the ground up with privacy and security in mind, and is HIPAA compliant.',
+      icon: '🔒',
     },
   ];
 
@@ -32,14 +32,14 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Empower Your Speech Therapy Practice
+            Listen.ai
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Listen is the all-in-one platform that helps speech-language
+            Listen is a new generation assistant that helps speech-language
             pathologists deliver better outcomes through AI-powered tools and
             analytics.
           </motion.p>

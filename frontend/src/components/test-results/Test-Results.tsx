@@ -189,17 +189,17 @@ const TestResults: React.FC = () => {
       },
       {
         accessorKey: 'testName',
-        header: 'Test Name',
+        header: 'Name',
         size: 180,
       },
       {
         accessorKey: 'testType',
-        header: 'Test Type',
+        header: 'Type',
         size: 150,
       },
       {
         id: 'rawData',
-        header: 'Raw Data',
+        header: 'Data',
         size: 100,
         Cell: ({ row }) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -216,7 +216,7 @@ const TestResults: React.FC = () => {
       },
       {
         id: 'rawAudio',
-        header: 'Raw Audio',
+        header: 'Audio',
         size: 100,
         Cell: ({ row }) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -243,7 +243,7 @@ const TestResults: React.FC = () => {
       },
       {
         id: 'aiAnalysis',
-        header: 'AI Analysis',
+        header: 'Analysis',
         size: 100,
         Cell: ({ row }) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
