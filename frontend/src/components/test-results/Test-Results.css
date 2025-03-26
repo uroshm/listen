@@ -1,0 +1,84 @@
+.analysis-content {
+  line-height: 1.6;
+  color: #333;
+  font-size: 1rem;
+}
+
+.analysis-content h1,
+.analysis-content h2,
+.analysis-content h3,
+.analysis-content h4,
+.analysis-content h5,
+.analysis-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: #222;
+}
+
+.analysis-content p {
+  margin: 0.8em 0;
+}
+
+.analysis-content ul,
+.analysis-content ol {
+  padding-left: 2em;
+  margin: 0.8em 0;
+}
+
+.analysis-content blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #666;
+}
+
+.analysis-content code {
+  background-color: #f0f0f0;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.analysis-content pre {
+  background-color: #f6f8fa;
+  padding: 1em;
+  overflow-x: auto;
+  border-radius: 3px;
+}
+
+.analysis-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.analysis-content th,
+.analysis-content td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.analysis-content th {
+  background-color: #f6f8fa;
+}
+
+/* Animation for when audio is playing */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.audio-playing {
+  animation: pulse 1.5s infinite;
+  color: #4caf50 !important;
+}

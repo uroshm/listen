@@ -23,6 +23,18 @@ export type PatientInfo = {
   dob: string;
 };
 
+export interface TestResult {
+  id: string;
+  testName: string;
+  testType: string;
+  rawData?: string;
+  testData: string;
+  testAudio: string;
+  aiAnalysis?: string;
+  createdAt?: string;
+  testAnalysis: string;
+}
+
 export const wordsBeginningS: string[] = [
   // 'sit',
   'soup',

@@ -6,7 +6,7 @@ import Contact from './components/contact/Contact';
 import Login from './components/login/Login';
 import Caseload from './components/caseload/Caseload';
 import WordList from './components/wordlist/WordList';
-import Tests from './components/test-results/Test-Results';
+import TestResults from './components/test-results/Test-Results';
 import { AuthProvider } from './auth/AuthContext';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/caseload" element={<Caseload />} />
             <Route path="/wordlist" element={<WordList />} />
-            <Route path="/tests" element={<Tests />} />
+            <Route path="/tests" element={<TestResults />} />
           </Routes>
         </div>
       </BrowserRouter>

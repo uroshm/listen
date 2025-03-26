@@ -12,29 +12,22 @@ import {
   Typography,
   Box,
   Tooltip,
+  Chip,
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useAuth } from '../../auth/AuthContext';
+import './Test-Results.css';
+import { TestResult } from '../../utils';
 
-interface Test {
-  id: string;
-  testName: string;
-  testType: string;
-  rawData?: string;
-  testData: string;
-  testAudio: string;
-  aiAnalysis?: string;
-  createdAt?: string;
-  testAnalysis: string;
-}
-
-const Tests: React.FC = () => {
+const TestResults: React.FC = () => {
   const location = useLocation();
   const { patient } = location.state || {};
   const { getToken } = useAuth();
-  const [tests, setTests] = React.useState<Test[]>([]);
+  const [tests, setTests] = React.useState<TestResult[]>([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -105,31 +98,99 @@ const Tests: React.FC = () => {
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Test Results for {patient?.firstName} {patient?.lastName}
+    <Box sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: 2,
+          mb: 3,
+          bgcolor: 'background.paper',
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          alignItems: { xs: 'flex-start', sm: 'center' },
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <PersonIcon color="primary" />
+          <Typography variant="subtitle1" component="span">
+            Patient:
+          </Typography>
+          <Chip
+            label={
+              patient
+                ? `${patient.firstName} ${patient.lastName}`
+                : 'All Patients'
+            }
+            color="primary"
+            variant="outlined"
+          />
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <CalendarTodayIcon color="secondary" />
+          <Typography variant="subtitle1" component="span">
+            Records:
+          </Typography>
+          <Chip
+            label={`${tests.length} Tests`}
+            color="secondary"
+            variant="outlined"
+          />
+        </Box>
+      </Paper>
+
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ color: '#333', fontWeight: 500, mb: 3 }}
+      >
+        Test Results
+        {patient && (
+          <span>
+            {' '}
+            for {patient.firstName} {patient.lastName}
+          </span>
+        )}
       </Typography>
 
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{ mb: 3, borderRadius: '8px', overflow: 'hidden' }}
+      >
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
-            <TableRow>
-              <TableCell>Test Name</TableCell>
-              <TableCell>Test Type</TableCell>
-              <TableCell align="center">Raw Data</TableCell>
-              <TableCell align="center">Raw Audio</TableCell>
-              <TableCell align="center">AI Analysis</TableCell>
+            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>Test Name</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Test Type</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                Raw Data
+              </TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                Raw Audio
+              </TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                AI Analysis
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tests.map((test) => (
-              <TableRow key={test.id}>
+              <TableRow
+                key={test.id}
+                sx={{
+                  '&:hover': { backgroundColor: '#f9f9f9' },
+                  transition: 'background-color 0.2s',
+                }}
+              >
                 <TableCell>{test.testName}</TableCell>
                 <TableCell>{test.testType}</TableCell>
                 <TableCell align="center">
                   <Tooltip title="View Raw Data">
                     <IconButton
                       onClick={() => handleViewRawData(test.testData)}
+                      sx={{ color: '#2196f3' }}
                     >
                       <DataObjectIcon />
                     </IconButton>
@@ -137,7 +198,10 @@ const Tests: React.FC = () => {
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title="Play Audio">
-                    <IconButton onClick={() => handlePlayAudio(test.testAudio)}>
+                    <IconButton
+                      onClick={() => handlePlayAudio(test.testAudio)}
+                      sx={{ color: '#4CAF50' }}
+                    >
                       <PlayCircleOutlineIcon />
                     </IconButton>
                   </Tooltip>
@@ -146,6 +210,7 @@ const Tests: React.FC = () => {
                   <Tooltip title="View Analysis">
                     <IconButton
                       onClick={() => handleViewAnalysis(test.testAnalysis)}
+                      sx={{ color: '#9c27b0' }}
                     >
                       <AnalyticsIcon />
                     </IconButton>
@@ -158,12 +223,22 @@ const Tests: React.FC = () => {
       </TableContainer>
 
       {tests.length === 0 && (
-        <Typography variant="body1" sx={{ mt: 2, textAlign: 'center' }}>
-          No tests found for this patient.
-        </Typography>
+        <Paper
+          elevation={1}
+          sx={{
+            p: 4,
+            textAlign: 'center',
+            backgroundColor: '#f8f8f8',
+            borderRadius: '8px',
+          }}
+        >
+          <Typography variant="body1" sx={{ color: '#666' }}>
+            No tests found for this patient.
+          </Typography>
+        </Paper>
       )}
     </Box>
   );
 };
 
-export default Tests;
+export default TestResults;
