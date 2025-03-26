@@ -68,9 +68,9 @@ const WordList: React.FC = () => {
           // Use the ref instead of the state
           const expectedWords = wordSequenceRef.current.join(' ');
 
-          const formData = new FormData();
-          formData.append('file', audioBlob, 'recording.wav');
-          formData.append('expected_text', expectedWords);
+          const payloadAnalyzeSpeech = new FormData();
+          payloadAnalyzeSpeech.append('file', audioBlob, 'recording.wav');
+          payloadAnalyzeSpeech.append('expected_text', expectedWords);
 
           try {
             const audioResponse = await fetch(
@@ -80,7 +80,7 @@ const WordList: React.FC = () => {
                 headers: {
                   Authorization: `Bearer ${getToken()}`,
                 },
-                body: formData,
+                body: payloadAnalyzeSpeech,
               }
             );
 
@@ -102,7 +102,7 @@ const WordList: React.FC = () => {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  model: 'google/gemini-2.0-pro-exp-02-05:free',
+                  model: 'deepseek/deepseek-chat-v3-0324:free',
                   messages: [
                     {
                       role: 'user',
@@ -125,8 +125,44 @@ const WordList: React.FC = () => {
 
             const analysisData = await aiResponse.json();
             setAnalysisResult(analysisData.choices[0].message.content);
+
+            const payloadCreateTest = new FormData();
+            payloadCreateTest.append('file', audioBlob, 'recording.wav');
+            payloadCreateTest.append('testName', 'Word List');
+            payloadCreateTest.append(
+              'testDetails',
+              'Pronounciation of /s/ sound'
+            );
+            payloadCreateTest.append('testDate', new Date().toISOString());
+            payloadCreateTest.append('testData', JSON.stringify(audioAnalysis));
+            payloadCreateTest.append(
+              'testAnalysis',
+              analysisData.choices[0].message.content
+            );
+            payloadCreateTest.append('patientId', patient?.id || '');
+
+            try {
+              const createTestResponse = await fetch(
+                'http://localhost:8080/listen/createTest',
+                {
+                  method: 'POST',
+                  headers: {
+                    Authorization: `Bearer ${getToken()}`,
+                  },
+                  body: payloadCreateTest,
+                }
+              );
+
+              if (!createTestResponse.ok) {
+                throw new Error('Failed to save test results');
+              }
+
+              console.log('Test results saved successfully');
+            } catch (error) {
+              console.error('Failed to save test results:', error);
+            }
           } catch (error) {
-            console.error('Error processing audio:', error);
+            console.error('Failed to analyze audio:', error);
           }
         } else {
           console.error('Audio blob is empty');
