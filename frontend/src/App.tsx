@@ -6,7 +6,7 @@ import Contact from './components/contact/Contact';
 import Login from './components/login/Login';
 import Caseload from './components/caseload/Caseload';
 import WordList from './components/wordlist/WordList';
-import Tests from './components/tests/Tests';
+import Tests from './components/test-results/Test-Results';
 import { AuthProvider } from './auth/AuthContext';
 
 function App() {
