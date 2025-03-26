@@ -1,48 +1,75 @@
 .contactContainer {
-  max-width: 600px;
+  max-width: 500px; /* Reduced from 600px */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem; /* Reduced from 2rem */
 }
 
 .contactForm {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem; /* Reduced from 1.5rem */
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.3rem; /* Reduced from 0.5rem */
 }
 
 .formGroup label {
   font-weight: 600;
+  font-size: 0.9rem; /* Added smaller font size */
 }
 
 .formGroup input,
 .formGroup textarea {
-  padding: 0.75rem;
+  padding: 0.5rem; /* Reduced from 0.75rem */
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 3px; /* Reduced from 4px */
+  font-size: 0.9rem; /* Reduced from 1rem */
 }
 
 .formGroup textarea {
   resize: vertical;
+  min-height: 80px; /* Added to make textarea more compact */
 }
 
 .submitButton {
   background-color: #007bff;
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.25rem; /* Reduced from 0.75rem 1.5rem */
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 3px; /* Reduced from 4px */
+  font-size: 0.9rem; /* Reduced from 1rem */
   cursor: pointer;
-  transition: background-color 0.5s;
+  transition: background-color 0.3s; /* Reduced from 0.5s for snappier feel */
+  align-self: flex-start; /* Makes button only as wide as needed */
+  margin-top: 0.5rem; /* Added small top margin */
 }
 
 .submitButton:hover {
   background-color: #0056b3;
+}
+
+/* Add heading style */
+.contactContainer h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Add compact styling for error messages */
+.errorMessage {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* Add compact styling for success messages */
+.successMessage {
+  color: #28a745;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  background-color: rgba(40, 167, 69, 0.1);
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
 }

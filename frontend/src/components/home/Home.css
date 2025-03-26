@@ -1,44 +1,44 @@
 .about-container {
-  padding-top: 80px;
+  padding-top: 40px; /* Reduced from 80px */
 }
 
 .mainContent {
   background: white;
-  padding: 80px 0;
+  padding: 40px 0; /* Reduced from 80px */
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 4rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem; /* Reduced from 2rem */
+  margin-top: 2.5rem; /* Reduced from 4rem */
 }
 
 .feature-card {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 10px; /* Slightly reduced */
+  padding: 1.5rem; /* Reduced from 2rem */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px); /* Reduced from -5px */
 }
 
 .values-section {
   background: #f8fafc;
-  padding: 80px 0;
+  padding: 40px 0; /* Reduced from 80px */
 }
 
 .values-grid {
-  margin-top: 3rem;
+  margin-top: 1.5rem; /* Reduced from 3rem */
 }
 
 .value-item {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 10px; /* Slightly reduced */
+  padding: 1.5rem; /* Reduced from 2rem */
   text-align: left;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
@@ -47,14 +47,14 @@
 
 .value-item h3 {
   color: #1a365d;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
+  font-size: 1.25rem; /* Reduced from 1.5rem */
 }
 
 .cta-section {
   background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
   color: white;
-  padding: 80px 0;
+  padding: 40px 0; /* Reduced from 80px */
   text-align: center;
 }
 
@@ -62,12 +62,13 @@
   display: inline-block;
   background: #4299e1;
   color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
+  border-radius: 6px; /* Slightly reduced */
   font-weight: 600;
   text-decoration: none;
   transition: background 0.3s ease;
-  margin-top: 2rem;
+  margin-top: 1.5rem; /* Reduced from 2rem */
+  font-size: 0.9rem; /* Added smaller font size */
 }
 
 .cta-button:hover {
@@ -81,7 +82,7 @@
   background-size: cover;
   background-position: center;
   color: white;
-  padding: 50px 0;
+  padding: 30px 0; /* Reduced from 50px */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,28 +90,39 @@
 }
 
 .hero h1 {
-  font-size: 4rem;
+  font-size: 3rem; /* Reduced from 4rem */
   font-weight: 800;
   line-height: 1.2;
   background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
 }
 
 .hero p {
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced from 1.5rem */
   color: #e2e8f0;
   max-width: 650px;
   margin: 0 auto;
 }
 
+/* Additional text size reductions for other elements */
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .hero h1 {
-    font-size: 2.75rem;
+    font-size: 2.25rem; /* Reduced from 2.75rem */
   }
 
   .hero p {
-    font-size: 1.125rem;
+    font-size: 1rem; /* Reduced from 1.125rem */
   }
 }
