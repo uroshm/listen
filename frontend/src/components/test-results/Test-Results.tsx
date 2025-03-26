@@ -299,7 +299,7 @@ const TestResults: React.FC = () => {
     },
   });
 
-  return (
+  return getToken() ? (
     <Box sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
       <Paper
         elevation={2}
@@ -360,6 +360,10 @@ const TestResults: React.FC = () => {
 
       <MaterialReactTable table={table} />
     </Box>
+  ) : (
+    <p>
+      Please <a href="/login">log in</a> to view test results.
+    </p>
   );
 };
 

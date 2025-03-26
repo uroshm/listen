@@ -391,7 +391,9 @@ const WordList: React.FC = () => {
       )}
     </div>
   ) : (
-    <p>Not logged in!</p>
+    <p>
+      Please <a href="/login">log in</a> to view test.
+    </p>
   );
 };
 

@@ -404,7 +404,10 @@ const PatientInfoTable = () => {
       />
     </>
   ) : (
-    <p>Not logged in!</p>
+    <p>
+      {' '}
+      Please <a href="/login">log in</a> to view your patients.
+    </p>
   );
 };
 
