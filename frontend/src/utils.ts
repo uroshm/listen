@@ -24,6 +24,7 @@ export type PatientInfo = {
 };
 
 export interface TestResult {
+  patient: any;
   id: string;
   testName: string;
   testType: string;

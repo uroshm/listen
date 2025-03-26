@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Typography,
   Box,
+  Paper,
+  Typography,
+  IconButton,
   Tooltip,
   Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
@@ -22,17 +21,73 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useAuth } from '../../auth/AuthContext';
 import './Test-Results.css';
 import { TestResult } from '../../utils';
+import {
+  MaterialReactTable,
+  type MRT_ColumnDef,
+  useMaterialReactTable,
+} from 'material-react-table';
+
+interface Patient {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
 
 const TestResults: React.FC = () => {
   const location = useLocation();
-  const { patient } = location.state || {};
+  const locationPatient = location.state?.patient;
   const { getToken } = useAuth();
-  const [tests, setTests] = React.useState<TestResult[]>([]);
+  const [tests, setTests] = useState<TestResult[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string>('all');
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
+    locationPatient || null
+  );
+  const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(
+    null
+  );
 
-  React.useEffect(() => {
-    const fetchData = async () => {
+  useEffect(() => {
+    const fetchPatients = async () => {
       try {
-        const response = await fetch('http://localhost:8080/listen/getTests', {
+        const response = await fetch(
+          'http://localhost:8080/listen/getMyPatients',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setPatients(data);
+
+          // If patient was passed via location state, set it as selected
+          if (locationPatient) {
+            setSelectedPatientId(locationPatient.id.toString());
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, [getToken, locationPatient]);
+
+  // Fetch tests based on selected patient
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const url =
+          selectedPatientId === 'all'
+            ? 'http://localhost:8080/listen/getTests'
+            : `http://localhost:8080/listen/getTests?patientId=${selectedPatientId}`;
+
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${getToken()}`,
@@ -49,15 +104,31 @@ const TestResults: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, [getToken]);
+    fetchTests();
+  }, [getToken, selectedPatientId]);
 
-  const handlePlayAudio = (audioData: string) => {
+  const handlePatientChange = (event: SelectChangeEvent) => {
+    const patientId = event.target.value;
+    setSelectedPatientId(patientId);
+
+    if (patientId === 'all') {
+      setSelectedPatient(null);
+    } else {
+      const patient =
+        patients.find((p) => p.id.toString() === patientId) || null;
+      setSelectedPatient(patient);
+    }
+  };
+
+  const handlePlayAudio = (audioData: string, testId: string) => {
     try {
       if (!audioData) {
         console.error('Audio data is undefined or null');
         return;
       }
+
+      // Set currently playing track
+      setCurrentlyPlayingId(testId);
 
       const binaryString = atob(audioData);
       const len = binaryString.length;
@@ -76,14 +147,17 @@ const TestResults: React.FC = () => {
       // Add cleanup when finished playing
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        setCurrentlyPlayingId(null);
       };
 
       // Play the audio
       audio.play().catch((error) => {
         console.error('Error playing audio:', error);
+        setCurrentlyPlayingId(null);
       });
     } catch (error) {
       console.error('Error processing audio data:', error);
+      setCurrentlyPlayingId(null);
     }
   };
 
@@ -96,6 +170,134 @@ const TestResults: React.FC = () => {
     // Implement analysis view logic
     console.log('Viewing analysis:', analysis);
   };
+
+  // Define columns for Material React Table
+  const columns = useMemo<MRT_ColumnDef<TestResult>[]>(
+    () => [
+      {
+        accessorFn: (row) => {
+          if (row.patient) {
+            return `${row.patient.firstName} ${row.patient.lastName}`;
+          }
+          return selectedPatient
+            ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
+            : 'Unknown';
+        },
+        id: 'patientName',
+        header: 'Patient',
+        size: 180,
+      },
+      {
+        accessorKey: 'testName',
+        header: 'Test Name',
+        size: 180,
+      },
+      {
+        accessorKey: 'testType',
+        header: 'Test Type',
+        size: 150,
+      },
+      {
+        id: 'rawData',
+        header: 'Raw Data',
+        size: 100,
+        Cell: ({ row }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Tooltip title="View Raw Data">
+              <IconButton
+                onClick={() => handleViewRawData(row.original.testData)}
+                sx={{ color: '#2196f3' }}
+              >
+                <DataObjectIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+      {
+        id: 'rawAudio',
+        header: 'Raw Audio',
+        size: 100,
+        Cell: ({ row }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Tooltip title="Play Audio">
+              <IconButton
+                onClick={() =>
+                  handlePlayAudio(row.original.testAudio, row.original.id)
+                }
+                sx={{
+                  color:
+                    currentlyPlayingId === row.original.id
+                      ? '#4CAF50'
+                      : undefined,
+                }}
+                className={
+                  currentlyPlayingId === row.original.id ? 'audio-playing' : ''
+                }
+              >
+                <PlayCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+      {
+        id: 'aiAnalysis',
+        header: 'AI Analysis',
+        size: 100,
+        Cell: ({ row }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Tooltip title="View Analysis">
+              <IconButton
+                onClick={() => handleViewAnalysis(row.original.testAnalysis)}
+                sx={{ color: '#9c27b0' }}
+              >
+                <AnalyticsIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    [currentlyPlayingId, selectedPatient]
+  );
+
+  // Configure Material React Table
+  const table = useMaterialReactTable({
+    columns,
+    data: tests,
+    enableColumnResizing: true,
+    enableFullScreenToggle: false,
+    enableDensityToggle: true,
+    enableColumnFilters: true,
+    enablePagination: true,
+    enableSorting: true,
+    initialState: {
+      pagination: { pageSize: 10, pageIndex: 0 },
+      density: 'comfortable',
+    },
+    muiTableContainerProps: {
+      sx: {
+        minHeight: '500px',
+      },
+    },
+    renderEmptyRowsFallback: () => (
+      <Typography
+        align="center"
+        sx={{ py: 6, color: '#666', fontSize: '1rem' }}
+      >
+        No tests found for{' '}
+        {selectedPatient
+          ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
+          : 'any patients'}
+        .
+      </Typography>
+    ),
+    state: {
+      isLoading: false,
+      showProgressBars: false,
+    },
+  });
 
   return (
     <Box sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
@@ -110,22 +312,37 @@ const TestResults: React.FC = () => {
           gap: 2,
           alignItems: { xs: 'flex-start', sm: 'center' },
           justifyContent: 'space-between',
+          flexWrap: 'wrap',
         }}
       >
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+            flexGrow: 1,
+            minWidth: '250px',
+          }}
+        >
           <PersonIcon color="primary" />
-          <Typography variant="subtitle1" component="span">
-            Patient:
-          </Typography>
-          <Chip
-            label={
-              patient
-                ? `${patient.firstName} ${patient.lastName}`
-                : 'All Patients'
-            }
-            color="primary"
-            variant="outlined"
-          />
+          <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="patient-select-label">Patient</InputLabel>
+            <Select
+              labelId="patient-select-label"
+              id="patient-select"
+              value={selectedPatientId}
+              label="Patient"
+              onChange={handlePatientChange}
+              sx={{ borderRadius: '16px' }}
+            >
+              <MenuItem value="all">All Patients</MenuItem>
+              {patients.map((patient) => (
+                <MenuItem key={patient.id} value={patient.id.toString()}>
+                  {patient.firstName} {patient.lastName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -141,102 +358,7 @@ const TestResults: React.FC = () => {
         </Box>
       </Paper>
 
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ color: '#333', fontWeight: 500, mb: 3 }}
-      >
-        Test Results
-        {patient && (
-          <span>
-            {' '}
-            for {patient.firstName} {patient.lastName}
-          </span>
-        )}
-      </Typography>
-
-      <TableContainer
-        component={Paper}
-        sx={{ mb: 3, borderRadius: '8px', overflow: 'hidden' }}
-      >
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell sx={{ fontWeight: 'bold' }}>Test Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Test Type</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                Raw Data
-              </TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                Raw Audio
-              </TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                AI Analysis
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tests.map((test) => (
-              <TableRow
-                key={test.id}
-                sx={{
-                  '&:hover': { backgroundColor: '#f9f9f9' },
-                  transition: 'background-color 0.2s',
-                }}
-              >
-                <TableCell>{test.testName}</TableCell>
-                <TableCell>{test.testType}</TableCell>
-                <TableCell align="center">
-                  <Tooltip title="View Raw Data">
-                    <IconButton
-                      onClick={() => handleViewRawData(test.testData)}
-                      sx={{ color: '#2196f3' }}
-                    >
-                      <DataObjectIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip title="Play Audio">
-                    <IconButton
-                      onClick={() => handlePlayAudio(test.testAudio)}
-                      sx={{ color: '#4CAF50' }}
-                    >
-                      <PlayCircleOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip title="View Analysis">
-                    <IconButton
-                      onClick={() => handleViewAnalysis(test.testAnalysis)}
-                      sx={{ color: '#9c27b0' }}
-                    >
-                      <AnalyticsIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {tests.length === 0 && (
-        <Paper
-          elevation={1}
-          sx={{
-            p: 4,
-            textAlign: 'center',
-            backgroundColor: '#f8f8f8',
-            borderRadius: '8px',
-          }}
-        >
-          <Typography variant="body1" sx={{ color: '#666' }}>
-            No tests found for this patient.
-          </Typography>
-        </Paper>
-      )}
+      <MaterialReactTable table={table} />
     </Box>
   );
 };
