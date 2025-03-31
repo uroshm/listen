@@ -1,7 +1,9 @@
+/* Markdown-specific formatting */
 .analysis-content {
-  line-height: 1.6;
+  line-height: 1.4; /* Reduced from 1.8 */
   color: #333;
   font-size: 1rem;
+  white-space: pre-wrap;
 }
 
 .analysis-content h1,
@@ -10,34 +12,39 @@
 .analysis-content h4,
 .analysis-content h5,
 .analysis-content h6 {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+  margin-top: 1em; /* Reduced from 1.6em */
+  margin-bottom: 0.5em; /* Reduced from 0.8em */
   font-weight: 600;
-  color: #222;
+  color: #333;
 }
 
 .analysis-content p {
-  margin: 0.8em 0;
+  margin: 0.5em 0; /* Reduced from 1.2em */
 }
 
 .analysis-content ul,
 .analysis-content ol {
   padding-left: 2em;
-  margin: 0.8em 0;
+  margin: 0.5em 0; /* Reduced from 1.2em */
+}
+
+.analysis-content li {
+  margin: 0.2em 0; /* Reduced from 0.5em */
 }
 
 .analysis-content blockquote {
   border-left: 4px solid #ddd;
   padding-left: 1em;
-  margin: 1em 0;
+  margin: 0.8em 0; /* Reduced from 1.5em */
   color: #666;
+  font-style: italic;
 }
 
 .analysis-content code {
-  background-color: #f0f0f0;
+  background-color: #f4f4f4;
   padding: 0.2em 0.4em;
   border-radius: 3px;
-  font-family: monospace;
+  font-family: 'Courier New', monospace;
   font-size: 0.9em;
 }
 
@@ -45,7 +52,15 @@
   background-color: #f6f8fa;
   padding: 1em;
   overflow-x: auto;
-  border-radius: 3px;
+  border-radius: 5px;
+  margin: 1.2em 0;
+}
+
+.analysis-content hr {
+  border: 0;
+  height: 1px;
+  background-color: #ddd;
+  margin: 2em 0;
 }
 
 .analysis-content table {
@@ -81,4 +96,142 @@
 .audio-playing {
   animation: pulse 1.5s infinite;
   color: #4caf50 !important;
+}
+
+/* Container and Layout */
+.test-results-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-paper {
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: #ffffff;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.patient-selector-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.records-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rounded-select {
+  border-radius: 16px;
+}
+
+.table-container {
+  min-height: 500px;
+}
+
+.empty-message {
+  padding-top: 48px;
+  padding-bottom: 48px;
+  color: #666;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Table Button Colors */
+.data-button {
+  color: #2196f3 !important; /* Blue */
+}
+
+.audio-button {
+  color: #4caf50 !important; /* Green */
+}
+
+.analysis-button {
+  color: #9c27b0 !important; /* Purple */
+}
+
+/* Modal Styling */
+.analysis-modal {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: #9c27b0;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.analysis-paper {
+  padding: 16px;
+  max-height: 50vh;
+  overflow: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.modal-actions {
+  justify-content: space-between;
+  padding: 16px;
+  background-color: #f5f5f5;
+}
+
+.rounded-button {
+  border-radius: 20px;
+}
+
+/* Add these button color styles */
+.center-content {
+  display: flex;
+  justify-content: center;
+}
+
+/* Data Modal Styling - Blue theme */
+.data-modal {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.data-modal-header {
+  background-color: #2196f3; /* Blue color to match data button */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.data-paper {
+  padding: 16px;
+  max-height: 50vh;
+  overflow: auto;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+.data-content {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
 }

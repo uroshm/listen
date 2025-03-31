@@ -12,12 +12,23 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Slide,
+  Snackbar,
+  Alert,
+  Fade,
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../auth/AuthContext';
 import './Test-Results.css';
 import { TestResult } from '../../utils';
@@ -26,6 +37,20 @@ import {
   type MRT_ColumnDef,
   useMaterialReactTable,
 } from 'material-react-table';
+import { TransitionProps } from '@mui/material/transitions';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+
+// Slide transition for the dialog
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 interface Patient {
   id: number;
@@ -47,6 +72,17 @@ const TestResults: React.FC = () => {
     null
   );
 
+  // State for analysis modal
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
+  const [currentAnalysis, setCurrentAnalysis] = useState<string>('');
+  const [currentTestName, setCurrentTestName] = useState<string>('');
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // State for raw data modal
+  const [dataModalOpen, setDataModalOpen] = useState(false);
+  const [currentData, setCurrentData] = useState<string>('');
+  const [currentDataTestName, setCurrentDataTestName] = useState<string>('');
+
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -65,7 +101,6 @@ const TestResults: React.FC = () => {
           const data = await response.json();
           setPatients(data);
 
-          // If patient was passed via location state, set it as selected
           if (locationPatient) {
             setSelectedPatientId(locationPatient.id.toString());
           }
@@ -78,7 +113,6 @@ const TestResults: React.FC = () => {
     fetchPatients();
   }, [getToken, locationPatient]);
 
-  // Fetch tests based on selected patient
   useEffect(() => {
     const fetchTests = async () => {
       try {
@@ -127,7 +161,6 @@ const TestResults: React.FC = () => {
         return;
       }
 
-      // Set currently playing track
       setCurrentlyPlayingId(testId);
 
       const binaryString = atob(audioData);
@@ -141,16 +174,13 @@ const TestResults: React.FC = () => {
       const blob = new Blob([bytes], { type: 'audio/wav' });
       const audioUrl = URL.createObjectURL(blob);
 
-      // Create audio element
       const audio = new Audio(audioUrl);
 
-      // Add cleanup when finished playing
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
         setCurrentlyPlayingId(null);
       };
 
-      // Play the audio
       audio.play().catch((error) => {
         console.error('Error playing audio:', error);
         setCurrentlyPlayingId(null);
@@ -161,27 +191,58 @@ const TestResults: React.FC = () => {
     }
   };
 
-  const handleViewRawData = (data: string) => {
-    // Implement raw data view logic
-    console.log('Viewing raw data:', data);
+  const handleViewRawData = (data: string, testName: string) => {
+    setCurrentData(data);
+    setCurrentDataTestName(testName);
+    setDataModalOpen(true);
   };
 
-  const handleViewAnalysis = (analysis: string) => {
-    // Implement analysis view logic
-    console.log('Viewing analysis:', analysis);
+  const handleCloseDataModal = () => {
+    setDataModalOpen(false);
   };
 
-  // Define columns for Material React Table
+  const handleCopyData = () => {
+    navigator.clipboard.writeText(currentData).then(
+      () => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 3000);
+      },
+      (err) => {
+        console.error('Could not copy text: ', err);
+      }
+    );
+  };
+
+  const handleViewAnalysis = (analysis: string, testName: string) => {
+    setCurrentAnalysis(analysis);
+    setCurrentTestName(testName);
+    setAnalysisModalOpen(true);
+  };
+
+  const handleCloseAnalysisModal = () => {
+    setAnalysisModalOpen(false);
+  };
+
+  const handleCopyAnalysis = () => {
+    navigator.clipboard.writeText(currentAnalysis).then(
+      () => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 3000);
+      },
+      (err) => {
+        console.error('Could not copy text: ', err);
+      }
+    );
+  };
+
   const columns = useMemo<MRT_ColumnDef<TestResult>[]>(
     () => [
       {
         accessorFn: (row) => {
-          if (row.patient) {
-            return `${row.patient.firstName} ${row.patient.lastName}`;
-          }
-          return selectedPatient
-            ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
-            : 'Unknown';
+          const patient = patients.find((p) => p.id === row.patientId);
+          return patient
+            ? `${patient.firstName} ${patient.lastName}`
+            : 'Unknown Patient';
         },
         id: 'patientName',
         header: 'Patient',
@@ -202,11 +263,16 @@ const TestResults: React.FC = () => {
         header: 'Data',
         size: 100,
         Cell: ({ row }) => (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box className="center-content">
             <Tooltip title="View Raw Data">
               <IconButton
-                onClick={() => handleViewRawData(row.original.testData)}
-                sx={{ color: '#2196f3' }}
+                onClick={() =>
+                  handleViewRawData(
+                    row.original.testData,
+                    row.original.testName
+                  )
+                }
+                className="data-button"
               >
                 <DataObjectIcon />
               </IconButton>
@@ -219,21 +285,15 @@ const TestResults: React.FC = () => {
         header: 'Audio',
         size: 100,
         Cell: ({ row }) => (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box className="center-content">
             <Tooltip title="Play Audio">
               <IconButton
                 onClick={() =>
                   handlePlayAudio(row.original.testAudio, row.original.id)
                 }
-                sx={{
-                  color:
-                    currentlyPlayingId === row.original.id
-                      ? '#4CAF50'
-                      : undefined,
-                }}
-                className={
+                className={`audio-button ${
                   currentlyPlayingId === row.original.id ? 'audio-playing' : ''
-                }
+                }`}
               >
                 <PlayCircleOutlineIcon />
               </IconButton>
@@ -246,11 +306,16 @@ const TestResults: React.FC = () => {
         header: 'Analysis',
         size: 100,
         Cell: ({ row }) => (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box className="center-content">
             <Tooltip title="View Analysis">
               <IconButton
-                onClick={() => handleViewAnalysis(row.original.testAnalysis)}
-                sx={{ color: '#9c27b0' }}
+                onClick={() =>
+                  handleViewAnalysis(
+                    row.original.testAnalysis,
+                    row.original.testName
+                  )
+                }
+                className="analysis-button"
               >
                 <AnalyticsIcon />
               </IconButton>
@@ -259,10 +324,9 @@ const TestResults: React.FC = () => {
         ),
       },
     ],
-    [currentlyPlayingId, selectedPatient]
+    [currentlyPlayingId, selectedPatient, patients]
   );
 
-  // Configure Material React Table
   const table = useMaterialReactTable({
     columns,
     data: tests,
@@ -277,15 +341,10 @@ const TestResults: React.FC = () => {
       density: 'comfortable',
     },
     muiTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
+      className: 'table-container',
     },
     renderEmptyRowsFallback: () => (
-      <Typography
-        align="center"
-        sx={{ py: 6, color: '#666', fontSize: '1rem' }}
-      >
+      <Typography className="empty-message">
         No tests found for{' '}
         {selectedPatient
           ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
@@ -300,30 +359,9 @@ const TestResults: React.FC = () => {
   });
 
   return getToken() ? (
-    <Box sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
-      <Paper
-        elevation={2}
-        sx={{
-          p: 2,
-          mb: 3,
-          bgcolor: 'background.paper',
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 1,
-            alignItems: 'center',
-            flexGrow: 1,
-            minWidth: '250px',
-          }}
-        >
+    <Box className="test-results-container">
+      <Paper className="header-paper" elevation={2}>
+        <Box className="patient-selector-container">
           <PersonIcon color="primary" />
           <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
             <InputLabel id="patient-select-label">Patient</InputLabel>
@@ -333,7 +371,7 @@ const TestResults: React.FC = () => {
               value={selectedPatientId}
               label="Patient"
               onChange={handlePatientChange}
-              sx={{ borderRadius: '16px' }}
+              className="rounded-select"
             >
               <MenuItem value="all">All Patients</MenuItem>
               {patients.map((patient) => (
@@ -345,7 +383,7 @@ const TestResults: React.FC = () => {
           </FormControl>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box className="records-indicator">
           <CalendarTodayIcon color="secondary" />
           <Typography variant="subtitle1" component="span">
             Records:
@@ -359,6 +397,143 @@ const TestResults: React.FC = () => {
       </Paper>
 
       <MaterialReactTable table={table} />
+
+      {/* Analysis Modal */}
+      <Dialog
+        open={analysisModalOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleCloseAnalysisModal}
+        aria-describedby="analysis-description"
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          elevation: 5,
+          className: 'analysis-modal',
+        }}
+      >
+        <DialogTitle className="modal-header">
+          <Typography variant="h6" component="div" sx={{ fontWeight: 500 }}>
+            Analysis: {currentTestName}
+          </Typography>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleCloseAnalysisModal}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers className="modal-content">
+          <Fade in={analysisModalOpen} timeout={300}>
+            <Box>
+              <Paper elevation={0} className="analysis-paper">
+                <div className="analysis-content">
+                  <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
+                    {currentAnalysis}
+                  </ReactMarkdown>
+                </div>
+              </Paper>
+            </Box>
+          </Fade>
+        </DialogContent>
+
+        <DialogActions className="modal-actions">
+          <Button
+            onClick={handleCopyAnalysis}
+            variant="outlined"
+            color="secondary"
+            startIcon={<ContentCopyIcon />}
+            className="rounded-button"
+          >
+            Copy to Clipboard
+          </Button>
+          <Button
+            onClick={handleCloseAnalysisModal}
+            variant="contained"
+            color="secondary"
+            className="rounded-button"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Raw Data Modal */}
+      <Dialog
+        open={dataModalOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleCloseDataModal}
+        aria-describedby="data-description"
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          elevation: 5,
+          className: 'data-modal',
+        }}
+      >
+        <DialogTitle className="data-modal-header">
+          <Typography variant="h6" component="div" sx={{ fontWeight: 500 }}>
+            Raw Data: {currentDataTestName}
+          </Typography>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleCloseDataModal}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers className="modal-content">
+          <Fade in={dataModalOpen} timeout={300}>
+            <Box>
+              <Paper elevation={0} className="data-paper">
+                <pre className="data-content">{currentData}</pre>
+              </Paper>
+            </Box>
+          </Fade>
+        </DialogContent>
+
+        <DialogActions className="modal-actions">
+          <Button
+            onClick={handleCopyData}
+            variant="outlined"
+            color="primary"
+            startIcon={<ContentCopyIcon />}
+            className="rounded-button"
+          >
+            Copy to Clipboard
+          </Button>
+          <Button
+            onClick={handleCloseDataModal}
+            variant="contained"
+            color="primary"
+            className="rounded-button"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Copy Success Notification */}
+      <Snackbar
+        open={copySuccess}
+        autoHideDuration={3000}
+        onClose={() => setCopySuccess(false)}
+      >
+        <Alert
+          onClose={() => setCopySuccess(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Analysis copied to clipboard!
+        </Alert>
+      </Snackbar>
     </Box>
   ) : (
     <p>

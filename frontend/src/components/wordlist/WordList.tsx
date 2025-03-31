@@ -89,7 +89,6 @@ const WordList: React.FC = () => {
             }
 
             const audioAnalysis = await audioResponse.json();
-            console.log('Audio analysis:', audioAnalysis);
 
             const apiKey = import.meta.env.VITE_API_KEY;
 
