@@ -29,6 +29,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CloseIcon from '@mui/icons-material/Close';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 import { useAuth } from '../../auth/AuthContext';
 import './Test-Results.css';
 import { TestResult } from '../../utils';
@@ -235,6 +236,12 @@ const TestResults: React.FC = () => {
     );
   };
 
+  const handleGenerateReport = (test: TestResult) => {
+    console.log('Generating report for test:', test);
+    // Implement report generation logic here
+    alert(`Report generation started for: ${test.testName}`);
+  };
+
   const columns = useMemo<MRT_ColumnDef<TestResult>[]>(
     () => [
       {
@@ -318,6 +325,25 @@ const TestResults: React.FC = () => {
                 className="analysis-button"
               >
                 <AnalyticsIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        size: 100,
+        Cell: ({ row }) => (
+          <Box
+            sx={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}
+          >
+            <Tooltip title="Generate Report">
+              <IconButton
+                onClick={() => handleGenerateReport(row.original)}
+                className="report-button"
+              >
+                <SummarizeIcon />
               </IconButton>
             </Tooltip>
           </Box>
