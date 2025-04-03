@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState, useEffect } from 'react';
 import {
   MRT_EditActionButtons,
   MaterialReactTable,
@@ -21,6 +21,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Paper,
+  Typography,
+  Chip,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   QueryClient,
@@ -32,8 +36,13 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ScienceIcon from '@mui/icons-material/Science';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useAuth } from '../../auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import WordList from '../wordlist/WordList';
+import './Caseload.css';
 
 interface TestConfig {
   testName: string;
@@ -65,15 +74,7 @@ const TestConfigModal: React.FC<TestConfigModalProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Assign Test</DialogTitle>
       <DialogContent>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            minWidth: 300,
-            mt: 2,
-          }}
-        >
+        <Box className="form-container">
           <FormControl fullWidth>
             <InputLabel>Test Name</InputLabel>
             <Select
@@ -122,15 +123,22 @@ const PatientInfoTable = () => {
   >({});
 
   const [patientInfo] = useState<PatientInfo[]>([]);
+  const [wordListOpen, setWordListOpen] = useState(false);
+  const [testConfig, setTestConfig] = useState<{
+    testName: string;
+    speechSound: string;
+  } | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<PatientInfo | null>(
+    null
+  );
+  const [selectedPatientId, setSelectedPatientId] = useState<string>('all');
+
+  const handlePatientChange = (event: SelectChangeEvent) => {
+    setSelectedPatientId(event.target.value);
+  };
 
   const columns = useMemo<MRT_ColumnDef<PatientInfo>[]>(
     () => [
-      // {
-      //   accessorKey: 'id',
-      //   header: 'Id',
-      //   enableEditing: false,
-      //   size: 80,
-      // },
       {
         accessorKey: 'firstName',
         header: 'First Name',
@@ -138,13 +146,11 @@ const PatientInfoTable = () => {
           required: true,
           error: !!validationErrors?.firstName,
           helperText: validationErrors?.firstName,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
               firstName: undefined,
             }),
-          //optionally add validation checking for onBlur or onChange
         },
       },
       {
@@ -154,7 +160,6 @@ const PatientInfoTable = () => {
           required: true,
           error: !!validationErrors?.lastName,
           helperText: validationErrors?.lastName,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -222,7 +227,6 @@ const PatientInfoTable = () => {
     [validationErrors]
   );
 
-  //call CREATE hook
   const { mutateAsync: createPatientInfo, isPending: isCreatingPatientInfo } =
     useCreatePatientInfo();
   const {
@@ -245,7 +249,7 @@ const PatientInfoTable = () => {
       }
       setValidationErrors({});
       await createPatientInfo(values);
-      table.setCreatingRow(null); //exit creating mode
+      table.setCreatingRow(null);
     };
 
   const handleSavePatientInfo: MRT_TableOptions<PatientInfo>['onEditingRowSave'] =
@@ -257,18 +261,23 @@ const PatientInfoTable = () => {
       }
       setValidationErrors({});
       await updatePatientInfo(values);
-      table.setEditingRow(null); //exit editing mode
+      table.setEditingRow(null);
     };
 
   const openDeleteConfirmModal = (row: MRT_Row<PatientInfo>) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm('Are you sure you want to delete this patient?')) {
       deletePatientInfo(row.original.id);
     }
   };
 
   const table = useMaterialReactTable({
     columns,
-    data: data as PatientInfo[],
+    data:
+      selectedPatientId === 'all'
+        ? (data as PatientInfo[])
+        : (data as PatientInfo[]).filter(
+            (patient) => patient.id.toString() === selectedPatientId
+          ),
     createDisplayMode: 'modal',
     editDisplayMode: 'modal',
     enableEditing: true,
@@ -280,9 +289,7 @@ const PatientInfoTable = () => {
         }
       : undefined,
     muiTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
+      className: 'table-container',
     },
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreatePatientInfo,
@@ -290,10 +297,8 @@ const PatientInfoTable = () => {
     onEditingRowSave: handleSavePatientInfo,
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
+        <DialogContent className="dialog-content">
+          {internalEditComponents}
         </DialogContent>
         <DialogActions>
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -303,10 +308,8 @@ const PatientInfoTable = () => {
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
         <DialogTitle variant="h3">Edit PatientInfo</DialogTitle>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
+        <DialogContent className="edit-dialog-content">
+          {internalEditComponents}
         </DialogContent>
         <DialogActions>
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -314,25 +317,28 @@ const PatientInfoTable = () => {
       </>
     ),
     renderRowActions: ({ row, table }) => (
-      <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Edit">
+      <Box className="row-actions">
+        <Tooltip title="Edit Patient">
           <IconButton onClick={() => table.setEditingRow(row)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Delete">
+        <Tooltip title="Delete Patient">
           <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Assign Patient a Test">
-          <IconButton onClick={() => handlePatientTest(row.original)}>
-            <span role="img" aria-label="test">
-              🧪
-            </span>
+        <Tooltip title="Start Test">
+          <IconButton
+            onClick={() => {
+              setSelectedPatient(row.original);
+              setTestModalOpen(true);
+            }}
+          >
+            <ScienceIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="View Tests">
+        <Tooltip title="View Test Results for this Patient">
           <IconButton
             onClick={() => handleViewTests(row.original)}
             color="info"
@@ -346,8 +352,6 @@ const PatientInfoTable = () => {
       <Button
         variant="contained"
         onClick={() => {
-          // table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
           table.setCreatingRow(createRow(table));
         }}
       >
@@ -365,25 +369,15 @@ const PatientInfoTable = () => {
   const { getToken } = useAuth();
 
   const navigate = useNavigate();
-  const [testModalOpen, setTestModalOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<PatientInfo | null>(
-    null
-  );
+  const location = useLocation();
+  const highlightPatientId = location.state?.highlightPatientId;
 
-  const handlePatientTest = (patient: PatientInfo) => {
-    setSelectedPatient(patient);
-    setTestModalOpen(true);
-  };
+  const [testModalOpen, setTestModalOpen] = useState(false);
 
   const handleTestConfigSubmit = (config: TestConfig) => {
-    if (selectedPatient) {
-      navigate('/wordlist', {
-        state: {
-          patient: selectedPatient,
-          testConfig: config,
-        },
-      });
-    }
+    setTestConfig(config);
+    setTestModalOpen(false);
+    setWordListOpen(true);
   };
 
   const handleViewTests = (patient: PatientInfo) => {
@@ -394,15 +388,75 @@ const PatientInfoTable = () => {
     });
   };
 
+  useEffect(() => {
+    if (highlightPatientId) {
+      setSelectedPatientId(highlightPatientId.toString());
+
+      // Optional: Scroll to the patient's row or highlight it
+      const patientRow = document.getElementById(
+        `patient-row-${highlightPatientId}`
+      );
+      if (patientRow) {
+        patientRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        patientRow.classList.add('highlighted-row');
+        setTimeout(() => {
+          patientRow.classList.remove('highlighted-row');
+        }, 3000);
+      }
+    }
+  }, [highlightPatientId, data]);
+
   return getToken() ? (
-    <>
+    <div className="caseload-container">
+      <Paper className="header-paper" elevation={2}>
+        <Box className="patient-selector-container">
+          <PersonIcon color="primary" />
+          <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="patient-select-label">Patient</InputLabel>
+            <Select
+              labelId="patient-select-label"
+              id="patient-select"
+              value={selectedPatientId}
+              label="Patient"
+              onChange={handlePatientChange}
+              className="rounded-select"
+            >
+              <MenuItem value="all">All Patients</MenuItem>
+              {data.map((patient) => (
+                <MenuItem key={patient.id} value={patient.id.toString()}>
+                  {patient.firstName} {patient.lastName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box className="records-indicator">
+          <CalendarTodayIcon color="secondary" />
+          <Typography variant="subtitle1" component="span">
+            Records:
+          </Typography>
+          <Chip
+            label={`${selectedPatientId === 'all' ? data.length : data.filter((p) => p.id.toString() === selectedPatientId).length} Patients`}
+            color="secondary"
+            variant="outlined"
+          />
+        </Box>
+      </Paper>
+
       <MaterialReactTable table={table} />
       <TestConfigModal
         open={testModalOpen}
         onClose={() => setTestModalOpen(false)}
         onSubmit={handleTestConfigSubmit}
       />
-    </>
+      <WordList
+        open={wordListOpen}
+        onClose={() => setWordListOpen(false)}
+        patient={selectedPatient}
+        testConfig={testConfig}
+      />
+    </div>
   ) : (
     <p>
       {' '}
@@ -411,7 +465,6 @@ const PatientInfoTable = () => {
   );
 };
 
-//CREATE hook (post new user to api)
 function useCreatePatientInfo() {
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
@@ -451,7 +504,6 @@ function useCreatePatientInfo() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate and refetch the patients list
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
@@ -542,10 +594,8 @@ function useUpdatePatientInfo() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate and refetch the patients list after successful update
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
-    //client side optimistic update
     onMutate: (newPatientInfoInfo: PatientInfo) => {
       queryClient.setQueryData(['users'], (prevPatientInfos: any) =>
         prevPatientInfos?.map((prevPatientInfo: PatientInfo) =>
@@ -555,31 +605,25 @@ function useUpdatePatientInfo() {
         )
       );
     },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
 }
 
-//DELETE hook (delete user in api)
 function useDeletePatientInfo() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (userId: string) => {
-      //send api update request here
       console.log('userId: ' + userId);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return Promise.resolve();
     },
-    //client side optimistic update
     onMutate: (userId: string) => {
       queryClient.setQueryData(['users'], (prevPatientInfos: any) =>
         prevPatientInfos?.filter((user: PatientInfo) => user.id !== userId)
       );
     },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
 }
 
-//react query setup in App.tsx
 import { PatientInfo } from '../../utils';
 
 const queryClient = new QueryClient();
@@ -599,6 +643,5 @@ function validatePatientInfo(user: PatientInfo) {
       ? 'First Name is Required'
       : '',
     lastName: !validateRequired(user.lastName) ? 'Last Name is Required' : '',
-    // email: !validateEmail(user.email) ? 'Incorrect Email Format' : '',
   };
 }

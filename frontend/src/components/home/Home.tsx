@@ -7,7 +7,7 @@ const Home = () => {
       title: 'Listen Copilot',
       description:
         'Real-time assistant providing analysis of speech patterns using advanced AI technology.',
-      icon: '🎯',
+      icon: '🤖',
     },
     {
       title: 'Automated Testing',

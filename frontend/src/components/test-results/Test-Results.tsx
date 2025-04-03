@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -61,6 +61,7 @@ interface Patient {
 
 const TestResults: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const locationPatient = location.state?.patient;
   const { getToken } = useAuth();
   const [tests, setTests] = useState<TestResult[]>([]);
@@ -242,6 +243,10 @@ const TestResults: React.FC = () => {
     alert(`Report generation started for: ${test.testName}`);
   };
 
+  const handlePatientClick = (patientId: number) => {
+    navigate('/caseload', { state: { highlightPatientId: patientId } });
+  };
+
   const columns = useMemo<MRT_ColumnDef<TestResult>[]>(
     () => [
       {
@@ -254,6 +259,21 @@ const TestResults: React.FC = () => {
         id: 'patientName',
         header: 'Patient',
         size: 180,
+        Cell: ({ row, renderedCellValue }) => (
+          <Box
+            onClick={() => {
+              const patient = patients.find(
+                (p) => p.id === row.original.patientId
+              );
+              if (patient) {
+                handlePatientClick(patient.id);
+              }
+            }}
+            className="clickable-patient"
+          >
+            {renderedCellValue}
+          </Box>
+        ),
       },
       {
         accessorKey: 'testName',

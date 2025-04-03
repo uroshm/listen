@@ -235,3 +235,15 @@
   line-height: 1.5;
   color: #333;
 }
+
+/* Clickable Patient Styling */
+.clickable-patient {
+  cursor: pointer;
+  color: #1976d2;
+  transition: all 0.2s;
+}
+
+.clickable-patient:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}

@@ -1,0 +1,108 @@
+/* Main Container */
+.caseload-container {
+  padding-top: 24px;
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Paper */
+.header-paper {
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: #ffffff;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .header-paper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 601px) {
+  .header-paper {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Patient Selector Container */
+.patient-selector-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+/* Records Indicator */
+.records-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Rounded Select */
+.rounded-select {
+  border-radius: 16px;
+}
+
+/* Table Container */
+.table-container {
+  min-height: 500px;
+}
+
+/* Dialog Content */
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Row Actions */
+.row-actions {
+  display: flex;
+  gap: 16px;
+}
+
+/* Form Container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 300px;
+  margin-top: 16px;
+}
+
+/* Test Config Modal */
+.test-config-dialog {
+  min-width: 300px;
+}
+
+/* Highlighted row styling */
+.highlighted-row {
+  background-color: rgba(25, 118, 210, 0.12) !important;
+  transition: background-color 0.5s ease;
+}
+
+/* Animation for the highlight effect */
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(25, 118, 210, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

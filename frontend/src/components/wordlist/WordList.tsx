@@ -2,14 +2,30 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { wordsBeginningS, wordsMiddleS, wordsEndS } from '../../utils';
 import SlideContent from '../slide-content/SlideContent';
-import CircularProgress from '@mui/material/CircularProgress';
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { useLocation } from 'react-router-dom';
-import { Box, Chip, Paper, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ScienceIcon from '@mui/icons-material/Science';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import { PatientInfo } from '../../utils';
+import './WordList.css';
+import { useNavigate } from 'react-router-dom';
 
 interface WordSlide {
   title: string;
@@ -18,10 +34,23 @@ interface WordSlide {
   path: string;
 }
 
-const WordList: React.FC = () => {
-  const location = useLocation();
-  const { patient, testConfig } = location.state || {};
+interface WordListProps {
+  open: boolean;
+  onClose: (testResult?: {
+    testCompleted: boolean;
+    patientId: number | null;
+    testConfig: { testName: string; speechSound: string } | null;
+  }) => void;
+  patient: PatientInfo | null;
+  testConfig: { testName: string; speechSound: string } | null;
+}
 
+const WordList: React.FC<WordListProps> = ({
+  open,
+  onClose,
+  patient,
+  testConfig,
+}) => {
   const [slides, setSlides] = useState<WordSlide[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -37,6 +66,34 @@ const WordList: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const wordSequenceRef = useRef<string[]>([]);
+
+  // Reset state when modal is opened
+  useEffect(() => {
+    if (open) {
+      setIsRecording(false);
+      setRecordedAudio(null);
+      setAnalysisResult('');
+      setIsAnalyzing(false);
+      setTimeLeft(null);
+      audioChunksRef.current = [];
+
+      // Initialize audio and generate word sequence
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+
+      startAudio(audioContext, analyser);
+      generateWordSequence();
+
+      return () => {
+        audioContext.close();
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
+      };
+    }
+  }, [open]);
 
   const startAudio = async (
     audioContext: AudioContext,
@@ -127,10 +184,13 @@ const WordList: React.FC = () => {
 
             const payloadCreateTest = new FormData();
             payloadCreateTest.append('file', audioBlob, 'recording.wav');
-            payloadCreateTest.append('testName', 'Word List');
+            payloadCreateTest.append(
+              'testName',
+              testConfig?.testName || 'Word List'
+            );
             payloadCreateTest.append(
               'testDetails',
-              'Pronounciation of /s/ sound'
+              `Pronounciation of ${testConfig?.speechSound || '/s/'} sound`
             );
             payloadCreateTest.append('testDate', new Date().toISOString());
             payloadCreateTest.append('testData', JSON.stringify(audioAnalysis));
@@ -155,8 +215,6 @@ const WordList: React.FC = () => {
               if (!createTestResponse.ok) {
                 throw new Error('Failed to save test results');
               }
-
-              console.log('Test results saved successfully');
             } catch (error) {
               console.error('Failed to save test results:', error);
             }
@@ -167,6 +225,8 @@ const WordList: React.FC = () => {
           console.error('Audio blob is empty');
         }
         audioChunksRef.current = []; // Clear the ref after processing
+        setIsAnalyzing(false);
+        handleModalClose();
       };
     } catch (error) {
       console.error('Error accessing microphone:', error);
@@ -204,25 +264,6 @@ const WordList: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    if (!getToken) return;
-    generateWordSequence(); // Generate words immediately on mount
-
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const analyser = audioContext.createAnalyser();
-    analyser.fftSize = 2048;
-
-    startAudio(audioContext, analyser);
-
-    return () => {
-      audioContext.close();
-      if (timerRef.current) {
-        clearInterval(timerRef.current as NodeJS.Timeout);
-      }
-    };
-  }, []);
-
   const handleRecord = () => {
     if (mediaRecorder) {
       if (isRecording) {
@@ -230,7 +271,7 @@ const WordList: React.FC = () => {
         setIsRecording(false);
         setIsAnalyzing(true);
         if (timerRef.current) {
-          clearInterval(timerRef.current as NodeJS.Timeout);
+          clearInterval(timerRef.current);
           setTimeLeft(null);
         }
       } else {
@@ -254,145 +295,194 @@ const WordList: React.FC = () => {
     }
   };
 
-  return getToken() ? (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <Paper
-        elevation={2}
+  const handleNewTest = () => {
+    setIsRecording(false);
+    setRecordedAudio(null);
+    setAnalysisResult('');
+    setIsAnalyzing(false);
+    generateWordSequence();
+  };
+
+  const handleModalClose = () => {
+    onClose();
+  };
+  const navigate = useNavigate();
+  const handleViewTests = (patient: PatientInfo) => {
+    navigate('/tests', {
+      state: {
+        patient: patient,
+      },
+    });
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={isRecording ? undefined : handleModalClose}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        sx: { minHeight: '80vh', maxHeight: '90vh' },
+      }}
+    >
+      <DialogTitle
         sx={{
-          p: 2,
-          mb: 3,
-          bgcolor: 'background.paper',
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-          alignItems: { xs: 'flex-start', sm: 'center' },
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid #e0e0e0',
         }}
       >
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <PersonIcon color="primary" />
-          <Typography variant="subtitle1" component="span">
-            Patient:
-          </Typography>
-          <Chip
-            label={`${patient?.firstName} ${patient?.lastName}`}
-            color="primary"
-            variant="outlined"
-          />
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <ScienceIcon color="secondary" />
-          <Typography variant="subtitle1" component="span">
-            Test:
-          </Typography>
-          <Chip
-            label={`${testConfig?.testName || 'Not set'}`}
-            color="secondary"
-            variant="outlined"
-          />
-          <Chip
-            label={`Sound: ${testConfig?.speechSound || 'Not set'}`}
-            color="secondary"
-            variant="outlined"
-          />
-        </Box>
-      </Paper>
-
-      {!isAnalyzing && !isRecording && (
-        <h3>
-          Click the "Start Recording" button, and say whatever word you see on
-          the screen!
-        </h3>
-      )}
-
-      {slides.length > 0 && !isAnalyzing && (
-        <div style={{ margin: '2rem auto', maxWidth: '800px' }}>
-          <SlideContent slides={slides} autoScroll={isRecording} />
-        </div>
-      )}
-
-      {!isAnalyzing && (
-        <button
-          onClick={handleRecord}
-          style={{
-            display: 'block',
-            margin: '20px auto',
-            backgroundColor: isRecording ? '#ff4444' : '#4CAF50',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          {isRecording ? `Stop Recording (${timeLeft}s)` : 'Start Recording'}
-        </button>
-      )}
-
-      {isAnalyzing && !analysisResult && (
-        <div
-          style={{
-            margin: '40px auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-          }}
-        >
-          <CircularProgress
-            size={60}
-            thickness={4}
-            sx={{
-              color: '#4CAF50',
-            }}
-          />
-          <div
-            style={{
-              color: '#666',
-              fontSize: '1.1rem',
-              fontWeight: 500,
-            }}
+        <Typography variant="h5">Speech Sound Test</Typography>
+        {!isRecording && (
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleModalClose}
+            aria-label="close"
           >
-            Analyzing your recording...
-          </div>
-        </div>
-      )}
+            <CloseIcon />
+          </IconButton>
+        )}
+      </DialogTitle>
 
-      {recordedAudio && (
-        <>
-          <audio
-            controls
-            src={recordedAudio}
-            style={{ display: 'block', margin: '20px auto' }}
-          />
-          {analysisResult && (
-            <div
-              style={{
-                margin: '20px auto',
-                padding: '20px',
-                backgroundColor: '#f5f5f5',
-                borderRadius: '5px',
-                maxWidth: '800px',
-              }}
-            >
-              <h3>Analysis:</h3>
-              <div className="markdown-content">
-                <ReactMarkdown
-                  rehypePlugins={[rehypeRaw]}
-                  remarkPlugins={[remarkGfm]}
-                >
-                  {analysisResult}
-                </ReactMarkdown>
-              </div>
-            </div>
+      <DialogContent className="modal-content">
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            mb: 3,
+            mt: 2,
+            bgcolor: 'background.paper',
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box className="patient-info-section">
+            <PersonIcon color="primary" />
+            <Typography variant="subtitle1" component="span">
+              Patient:
+            </Typography>
+            <Chip
+              label={`${patient?.firstName} ${patient?.lastName}`}
+              color="primary"
+              variant="outlined"
+            />
+          </Box>
+
+          <Box className="patient-info-section">
+            <ScienceIcon color="secondary" />
+            <Typography variant="subtitle1" component="span">
+              Test:
+            </Typography>
+            <Chip
+              label={`${testConfig?.testName || 'Word List'}`}
+              color="secondary"
+              variant="outlined"
+            />
+            <Chip
+              label={`Sound: ${testConfig?.speechSound || '/s/'}`}
+              color="secondary"
+              variant="outlined"
+            />
+          </Box>
+
+          {isAnalyzing && (
+            <Tooltip title="View Tests">
+              <IconButton
+                onClick={() => handleViewTests(patient!)}
+                className={patient?.id ? 'highlight-action' : ''}
+              >
+                <AssessmentIcon />
+              </IconButton>
+            </Tooltip>
           )}
-        </>
+        </Paper>
+
+        {!isAnalyzing && !isRecording && !recordedAudio && (
+          <Typography variant="h6" className="word-list-header">
+            Click the "Start Recording" button, and say whatever word you see on
+            the screen!
+          </Typography>
+        )}
+
+        {slides.length > 0 && !isAnalyzing && !recordedAudio && (
+          <div className="slides-container">
+            <SlideContent slides={slides} autoScroll={isRecording} />
+          </div>
+        )}
+        <Box sx={{ textAlign: 'center' }}>
+          {!isAnalyzing && !recordedAudio && (
+            <Button
+              variant="contained"
+              onClick={handleRecord}
+              className={`recording-button ${isRecording ? 'recording' : 'not-recording'}`}
+            >
+              {isRecording
+                ? `Stop Recording (${timeLeft}s)`
+                : 'Start Recording'}
+            </Button>
+          )}
+        </Box>
+        {isAnalyzing && !analysisResult && (
+          <div className="analyzing-container">
+            <CircularProgress
+              size={60}
+              thickness={4}
+              sx={{
+                color: '#4CAF50',
+              }}
+            />
+            <div className="analyzing-text">
+              Analyzing your recording... Wait here or click "View Tests" in the
+              top right to see results.
+            </div>
+          </div>
+        )}
+
+        {recordedAudio && (
+          <Box sx={{ mt: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <audio controls src={recordedAudio} className="audio-player" />
+            </Box>
+            {analysisResult && (
+              <Paper elevation={1} className="analysis-container">
+                <Typography variant="h6" gutterBottom>
+                  Analysis:
+                </Typography>
+                <div className="markdown-content">
+                  <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {analysisResult}
+                  </ReactMarkdown>
+                </div>
+              </Paper>
+            )}
+          </Box>
+        )}
+      </DialogContent>
+
+      {recordedAudio && analysisResult && (
+        <DialogActions className="modal-footer">
+          <Button onClick={handleNewTest} variant="outlined" color="primary">
+            Start New Test
+          </Button>
+          <Button
+            onClick={handleModalClose}
+            variant="contained"
+            color="primary"
+            disabled={isRecording || isAnalyzing}
+          >
+            Close
+          </Button>
+        </DialogActions>
       )}
-    </div>
-  ) : (
-    <p>
-      Please <a href="/login">log in</a> to view test.
-    </p>
+    </Dialog>
   );
 };
 
