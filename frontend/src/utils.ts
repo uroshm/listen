@@ -37,6 +37,10 @@ export interface TestResult {
   testAnalysis: string;
 }
 
+export const wordsBeginningR: string[] = [];
+export const wordsMiddleR: string[] = [];
+export const wordsEndR: string[] = [];
+
 export const wordsBeginningS: string[] = [
   // 'sit',
   'soup',

@@ -270,14 +270,15 @@ const PatientInfoTable = () => {
     }
   };
 
+  const filteredData = useMemo(() => {
+    return selectedPatientId === 'all'
+      ? data
+      : data.filter((patient) => patient.id.toString() === selectedPatientId);
+  }, [data, selectedPatientId]);
+
   const table = useMaterialReactTable({
     columns,
-    data:
-      selectedPatientId === 'all'
-        ? (data as PatientInfo[])
-        : (data as PatientInfo[]).filter(
-            (patient) => patient.id.toString() === selectedPatientId
-          ),
+    data: filteredData,
     createDisplayMode: 'modal',
     editDisplayMode: 'modal',
     enableEditing: true,
@@ -389,22 +390,26 @@ const PatientInfoTable = () => {
   };
 
   useEffect(() => {
-    if (highlightPatientId) {
-      setSelectedPatientId(highlightPatientId.toString());
-
-      // Optional: Scroll to the patient's row or highlight it
-      const patientRow = document.getElementById(
-        `patient-row-${highlightPatientId}`
-      );
-      if (patientRow) {
-        patientRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        patientRow.classList.add('highlighted-row');
-        setTimeout(() => {
-          patientRow.classList.remove('highlighted-row');
-        }, 3000);
+    if (highlightPatientId && data.length > 0) {
+      if (selectedPatientId !== highlightPatientId.toString()) {
+        setSelectedPatientId(highlightPatientId.toString());
       }
+
+      requestAnimationFrame(() => {
+        const patientRow = document.getElementById(
+          `patient-row-${highlightPatientId}`
+        );
+        if (patientRow) {
+          patientRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          patientRow.classList.add('highlighted-row');
+          setTimeout(() => {
+            patientRow.classList.remove('highlighted-row');
+          }, 3000);
+        }
+      });
     }
-  }, [highlightPatientId, data]);
+    // Remove data from dependencies to prevent loops when data changes
+  }, [highlightPatientId]);
 
   return getToken() ? (
     <div className="caseload-container">

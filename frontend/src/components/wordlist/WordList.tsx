@@ -162,11 +162,11 @@ const WordList: React.FC<WordListProps> = ({
                   messages: [
                     {
                       role: 'user',
-                      content: `Show me a table output, with three categories initial, medial, and final. Group the following expected text words in these categories.
+                      content: `
                         Write a brief analysis on the results as well.
                         Here is a list of words I asked my patient to pronounce.
-                        Focusing only on the S sound and where it appears in each word (initial, medial, or final), 
-                        have data regarding % accurate production in table format, including words in each column.
+                        Focusing only on the ${testConfig?.speechSound} sound, 
+                        have data regarding % accurate vs inaccurate production in table format, including words in each column.
                         Expected Text: ${audioAnalysis.expected_text}
                         Actual Recorded Phonemes: ${audioAnalysis.phonemes ? audioAnalysis.phonemes.join(', ') : 'No phonemes detected'}`,
                     },
@@ -234,14 +234,58 @@ const WordList: React.FC<WordListProps> = ({
   };
 
   const generateWordSequence = () => {
-    // Generate the word list
-    const allWords = [...wordsBeginningS, ...wordsMiddleS, ...wordsEndS];
-    const shuffled = [...allWords].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 10);
-
+    const sound = testConfig?.speechSound || 's';
+    const position = testConfig?.testName || 'initial';
+    let wordPool: string[] = [];
+    
+    switch (sound) {
+      case 's':
+        if (position === 'initial') {
+          wordPool = [...wordsBeginningS];
+        } else if (position === 'medial') {
+          wordPool = [...wordsMiddleS];
+        } else if (position === 'final') {
+          wordPool = [...wordsEndS];
+        }
+        break;
+      
+      case 'r':
+        if (position === 'initial') {
+          wordPool = [...wordsBeginningS];
+        } else if (position === 'medial') {
+          wordPool = [...wordsMiddleS];
+        } else if (position === 'final') {
+          wordPool = [...wordsEndS];
+        }
+        break;
+        
+      case 'l':
+        if (position === 'initial') {
+          wordPool = [...wordsBeginningS];
+        } else if (position === 'medial') {
+          wordPool = [...wordsMiddleS];
+        } else if (position === 'final') {
+          wordPool = [...wordsEndS];
+        }
+        break;
+        
+      case 'th':
+        if (position === 'initial') {
+          wordPool = [...wordsBeginningS];
+        } else if (position === 'medial') {
+          wordPool = [...wordsMiddleS];
+        } else if (position === 'final') {
+          wordPool = [...wordsEndS];
+        }
+        break;
+    }
+    
+    // Shuffle and select 10 words
+    const shuffled = [...wordPool].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+    
     wordSequenceRef.current = selected;
-
-    // Preload images separately
+    
     const preloadImages = selected.map((word) => {
       return new Promise((resolve) => {
         const img = new Image();
@@ -249,12 +293,19 @@ const WordList: React.FC<WordListProps> = ({
           resolve({
             title: word,
             content: '',
-            imageUrl: `/s_sounds/${word.toLowerCase()}.jpeg`,
+            imageUrl: `${word.toLowerCase()}.jpeg`,
             path: '#',
           });
         };
-        img.onerror = () => resolve(null);
-        img.src = `/s_sounds/${word.toLowerCase()}.jpeg`;
+        img.onerror = () => {
+          resolve({
+            title: word,
+            content: word,
+            imageUrl: '',
+            path: '#',
+          });
+        };
+        img.src = `${word.toLowerCase()}.jpeg`;
       });
     });
 
@@ -277,7 +328,7 @@ const WordList: React.FC<WordListProps> = ({
       } else {
         mediaRecorder.start();
         setIsRecording(true);
-        setTimeLeft(18);
+        setTimeLeft(9);
 
         timerRef.current = setInterval(() => {
           setTimeLeft((prevTime) => {
