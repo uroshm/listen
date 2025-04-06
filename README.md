@@ -6,7 +6,10 @@ Listen is a multi-purpose tool designed specifically for speech-language patholo
 The project includes Docker support for running the backend, frontend, and database in containers.
 
 ### Running with Docker
-To run the entire application using Docker, use the following command:
+First, build the back-end. Navigate to the backend directory and run `./gradlew clean build`.
+Next, build the front-end. Navigate to the frontend directory and run `npm run clean && npm run build`.
+
+Now, to run the entire application using Docker, use the following command:
 ```sh
 docker-compose up
 ```
