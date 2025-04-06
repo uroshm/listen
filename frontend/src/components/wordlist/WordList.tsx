@@ -237,7 +237,7 @@ const WordList: React.FC<WordListProps> = ({
     const sound = testConfig?.speechSound || 's';
     const position = testConfig?.testName || 'initial';
     let wordPool: string[] = [];
-    
+
     switch (sound) {
       case 's':
         if (position === 'initial') {
@@ -248,7 +248,7 @@ const WordList: React.FC<WordListProps> = ({
           wordPool = [...wordsEndS];
         }
         break;
-      
+
       case 'r':
         if (position === 'initial') {
           wordPool = [...wordsBeginningS];
@@ -258,7 +258,7 @@ const WordList: React.FC<WordListProps> = ({
           wordPool = [...wordsEndS];
         }
         break;
-        
+
       case 'l':
         if (position === 'initial') {
           wordPool = [...wordsBeginningS];
@@ -268,7 +268,7 @@ const WordList: React.FC<WordListProps> = ({
           wordPool = [...wordsEndS];
         }
         break;
-        
+
       case 'th':
         if (position === 'initial') {
           wordPool = [...wordsBeginningS];
@@ -279,13 +279,13 @@ const WordList: React.FC<WordListProps> = ({
         }
         break;
     }
-    
+
     // Shuffle and select 10 words
     const shuffled = [...wordPool].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 5);
-    
+
     wordSequenceRef.current = selected;
-    
+
     const preloadImages = selected.map((word) => {
       return new Promise((resolve) => {
         const img = new Image();
