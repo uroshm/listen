@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = 8081;
 
 // Serve static files from the dist directory
 app.use(express.static(join(__dirname, 'dist')));
