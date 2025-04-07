@@ -146,11 +146,7 @@ const WordList: React.FC<WordListProps> = ({
             }
 
             const audioAnalysis = await audioResponse.json();
-
-            // This is just for demonstration purposes for Gtech CS6460.
-            // In a prod scenario, store keys in a secret manager or a .env file.
-            const apiKey = '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';
-
+            const apiKey = process.env.REACT_APP_OPENROUTER_API_KEY;
             const aiResponse = await fetch(
               'https://openrouter.ai/api/v1/chat/completions',
               {
