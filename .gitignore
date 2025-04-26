@@ -3,6 +3,7 @@ frontend/.vscode
 frontend/.env
 
 backend/bin
+backend/build
 backend/.vscode
 backend/.gradle
 
