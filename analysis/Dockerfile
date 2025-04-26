@@ -14,7 +14,7 @@ WORKDIR /tmp
 
 # Install dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install -e .
+    pip install -e .    
 
 # Final stage
 FROM python:3.9-slim

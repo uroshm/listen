@@ -10,7 +10,6 @@ import torch
 from transformers import AutoProcessor, AutoModelForCTC
 import nltk
 from .data_class import SpeechAnalysisResult
-from analysis.utils.audio_converter import convert_audio_format
 
 logger = logging.getLogger(__name__)
 

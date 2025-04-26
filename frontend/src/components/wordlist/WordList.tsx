@@ -146,7 +146,7 @@ const WordList: React.FC<WordListProps> = ({
             }
 
             const audioAnalysis = await audioResponse.json();
-            const apiKey = process.env.REACT_APP_OPENROUTER_API_KEY;
+            const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
             const aiResponse = await fetch(
               'https://openrouter.ai/api/v1/chat/completions',
               {
