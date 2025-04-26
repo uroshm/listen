@@ -99,10 +99,7 @@ const TestConfigModal: React.FC<TestConfigModalProps> = ({
                 setTestConfig({ ...testConfig, speechSound: e.target.value })
               }
             >
-              <MenuItem value="r">/r/</MenuItem>
               <MenuItem value="s">/s/</MenuItem>
-              <MenuItem value="l">/l/</MenuItem>
-              <MenuItem value="th">/th/</MenuItem>
             </Select>
           </FormControl>
         </Box>

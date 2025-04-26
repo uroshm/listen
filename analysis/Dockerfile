@@ -1,35 +1,16 @@
-# Use Python 3.9 Alpine for a smaller base image
-FROM python:3.9-slim AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy only pyproject.toml first to leverage Docker cache
-COPY pyproject.toml /tmp/
-WORKDIR /tmp
-
-# Install dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install -e .    
-
-# Final stage
 FROM python:3.9-slim
+WORKDIR /app
 
-# Install runtime dependencies
+COPY ./analysis /app/analysis
+COPY ./pyproject.toml /app/
+
+RUN pip install -e .
+
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
-
-# Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-WORKDIR /app
 
 # Create utility directory structure first
 RUN mkdir -p /app/analysis/utils
@@ -52,14 +33,6 @@ RUN echo "def convert_audio_format(input_file, output_file='converted.wav'):\n\
 # Create __init__.py files
 RUN touch /app/analysis/__init__.py /app/analysis/utils/__init__.py
 
-# Download NLTK data to a specific location
-RUN mkdir -p /app/nltk_data && \
-    python -c "import nltk; nltk.data.path.append('/app/nltk_data'); nltk.download('cmudict', download_dir='/app/nltk_data')"
-ENV NLTK_DATA=/app/nltk_data
-
-# Copy only the necessary application files
-COPY ./analysis /app/analysis
-COPY ./pyproject.toml /app/
 
 # Expose port
 EXPOSE 8000
