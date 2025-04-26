@@ -15,6 +15,7 @@ COPY .env .env
 COPY . .
 
 # Build the application (now with access to .env)
+RUN npm run clean
 RUN npm run build
 
 # Production stage
