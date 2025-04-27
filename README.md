@@ -9,8 +9,9 @@ To run the entire application using Docker, use the following command:
 docker-compose up
 ```
 
-- Note that https://github.com/uroshm/listen/blob/main/frontend/.env will need to be updated with your OpenRouter (https://openrouter.ai/) API Key. The model that is being used currently is "deepseek/deepseek-chat-v3-0324:free", but this will be changed to the user's choice in future iterations.
-- Note that we are aware that the Analysis Docker container takes a while to download dependencies, this is something we are working on in https://github.com/uroshm/listen/issues/33.
+- Note that https://github.com/uroshm/listen/blob/main/frontend/.env will need to be updated with your OpenRouter (https://openrouter.ai/) API Key.
+- The default model that is being used currently is "deepseek/deepseek-chat-v3-0324:free", but this will be changed to the user's choice in future iterations (https://github.com/uroshm/listen/issues/34)
+- We are aware that the Analysis Docker container takes a while to download dependencies, this is something we are working on in https://github.com/uroshm/listen/issues/33.
 
 
 ### Implementation Chart
