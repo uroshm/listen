@@ -1,6 +1,6 @@
-# Listen
+# Listen.ai
 
-Listen is a multi-purpose tool designed specifically for speech-language pathologists (SLPs). It provides an all-in-one solution for SLPs to enhance their work with clients through advanced features such as real-time speech recognition and testing, AI integration, record keeping, goal setting, goal tracking, and more.
+Listen.ai is a multi-purpose tool designed specifically for speech-language pathologists (SLPs). It provides an all-in-one solution for SLPs to enhance their work with clients through advanced features such as real-time speech recognition and testing, AI integration, record keeping, goal setting, goal tracking, and more.
 
 ### Quick start
 
