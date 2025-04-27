@@ -36,7 +36,7 @@ We’re actively working to improve this (issue #33).
 
 ## Contributing
 We welcome contributions!
-Please see CONTRIBUTING.md for guidelines on how to get started.
+Please see <a href="https://github.com/uroshm/listen/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines on how to get started.
 
 ## License
 This project is licensed under the GNU General Public License v3.0.
