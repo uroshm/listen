@@ -13,7 +13,8 @@ It offers an all-in-one solution to enhance client work with features like:
 - And much more
 
 ## Quick Start
-To run the full application with Docker, simply use:
+- Update the frontend/.env file with your OpenRouter API key.
+- Run with Docker:
 
 ```sh
 docker-compose up
@@ -21,7 +22,7 @@ docker-compose up
 
 ## Before you start:
 
-- Update the frontend/.env file with your OpenRouter API key.
+
 
 - The current default AI model is deepseek/deepseek-chat-v3-0324:free.
 Future versions will allow users to easily choose their preferred model (issue #34).
