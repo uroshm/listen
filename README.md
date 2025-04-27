@@ -14,7 +14,7 @@ It offers an all-in-one solution to enhance client work with features like:
 
 ## Quick Start
 - Update the <a href="https://github.com/uroshm/listen/blob/main/frontend/.env">frontend/.env file</a> with your OpenRouter API key.
-- Run with Docker:
+- Run with Docker from root directory with this command:
 
 ```sh
 docker-compose up
