@@ -33,6 +33,8 @@ We’re actively working to improve this (issue #33).
 ## Architecture Overview
 ![listen v2](https://github.com/user-attachments/assets/51950b2e-3a81-46b1-9c0a-30e790cc9a8e)
 
+## Quick Demo
+https://www.youtube.com/watch?v=n9avGq0rlxk
 
 ## Contributing
 We welcome contributions!
