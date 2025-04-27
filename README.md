@@ -44,7 +44,7 @@ Please see <a href="https://github.com/uroshm/listen/blob/main/CONTRIBUTING.md">
 ## License
 This project is licensed under the GNU General Public License v3.0.
 
-Links
+## Links
 - <a href="https://openrouter.ai/">OpenRouter</a>
 
 - <a href="https://github.com/uroshm/listen/issues">Project Issues</a>
