@@ -10,3 +10,12 @@ backend/.gradle
 .gitignore
 
 **/settings.json
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/listen.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/prettier.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/modules/backend.main.iml
