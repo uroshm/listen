@@ -1,4 +1,4 @@
-package com.listen.repositories;
+package com.listen.records;
 
 import java.util.List;
 
@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.listen.entity.ListenUser;
-import com.listen.entity.PatientTest;
+import com.listen.auth.ListenUser;
 
 @Repository
 public interface PatientTestRepository extends JpaRepository<PatientTest, Long> {

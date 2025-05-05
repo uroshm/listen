@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/listen/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {

@@ -1,7 +1,4 @@
-package com.listen.dto;
-
-import com.listen.entity.Patient;
-import com.listen.entity.PatientTest;
+package com.listen.records;
 
 public record PatientTestDTO(
     String testName,

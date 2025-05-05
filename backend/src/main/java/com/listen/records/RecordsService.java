@@ -1,4 +1,4 @@
-package com.listen.services;
+package com.listen.records;
 
 import java.io.File;
 import java.util.List;
@@ -8,14 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.listen.dto.PatientDTO;
-import com.listen.dto.PatientTestDTO;
-import com.listen.entity.ListenUser;
-import com.listen.entity.Patient;
-import com.listen.entity.PatientTest;
-import com.listen.repositories.PatientRepository;
-import com.listen.repositories.PatientTestRepository;
-import com.listen.services.TranscriptionService.TranscriptionResult;
+import com.listen.auth.ListenUser;
+import com.listen.transcription.TranscriptionService;
+import com.listen.transcription.TranscriptionService.TranscriptionResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class ListenService {
+public class RecordsService {
 
   private final PatientRepository patientRepository;
   private final PatientTestRepository patientTestRepository;

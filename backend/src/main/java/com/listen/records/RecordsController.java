@@ -1,4 +1,4 @@
-package com.listen.controller;
+package com.listen.records;
 
 import java.util.List;
 
@@ -18,32 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.listen.auth.AuthService;
-import com.listen.dto.PatientDTO;
-import com.listen.dto.PatientTestDTO;
-import com.listen.entity.ListenUser;
-import com.listen.entity.Patient;
-import com.listen.services.ListenService;
-import com.listen.services.TranscriptionService.TranscriptionResult;
+import com.listen.auth.ListenUser;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/listen")
+@RequestMapping("/listen/records")
 @RequiredArgsConstructor
-@Slf4j
-public class ListenController {
+public class RecordsController {
 
-  private final ListenService listenService;
+  private final RecordsService recordsService;
   private final AuthService authService;
-
-  @CrossOrigin(origins = "http://localhost:8081")
-  @PostMapping("/uploadAudio")
-  @PreAuthorize("hasAuthority('ROLE_USER')")
-  public TranscriptionResult uploadAudio(
-      @RequestParam("file") MultipartFile file, @RequestParam("expectedText") String expectedText) {
-    return listenService.uploadAudio(file, expectedText);
-  }
 
   @CrossOrigin(origins = "http://localhost:8081")
   @GetMapping("/getMyPatients")
@@ -51,7 +36,7 @@ public class ListenController {
   public List<PatientDTO> getAllPatients(Authentication authentication) {
     var username = authentication.getName();
     var currentUser = authService.findByUsername(username);
-    return listenService.getPatientsByUser(currentUser);
+    return recordsService.getPatientsByUser(currentUser);
   }
 
   @CrossOrigin(origins = "http://localhost:8081")
@@ -61,7 +46,7 @@ public class ListenController {
       @RequestBody PatientDTO patientDTO, Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
     Patient patient = patientDTO.toEntity(currentUser);
-    listenService.createPatient(patient);
+    recordsService.createPatient(patient);
     return ResponseEntity.ok(patientDTO);
   }
 
@@ -71,7 +56,7 @@ public class ListenController {
   public ResponseEntity<Patient> editPatient(
       @PathVariable Long id, @RequestBody PatientDTO patientDTO, Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
-    return ResponseEntity.ok(listenService.editPatient(id, patientDTO, currentUser));
+    return ResponseEntity.ok(recordsService.editPatient(id, patientDTO, currentUser));
   }
 
   @CrossOrigin(origins = "http://localhost:8081")
@@ -82,7 +67,7 @@ public class ListenController {
       PatientTestDTO patientTestDTO,
       Authentication authentication) {
     ListenUser currentUser = authService.findByUsername(authentication.getName());
-    return ResponseEntity.ok(listenService.createTest(file, patientTestDTO, currentUser));
+    return ResponseEntity.ok(recordsService.createTest(file, patientTestDTO, currentUser));
   }
 
   @CrossOrigin(origins = "http://localhost:8081")
@@ -93,14 +78,14 @@ public class ListenController {
 
     if (patientId != null) {
       return ResponseEntity.ok(
-          listenService
+          recordsService
               .getTestsByPatientId(patientId, authService.findByUsername(authentication.getName()))
               .stream()
               .map(PatientTestDTO::fromEntity)
               .toList());
     } else {
       return ResponseEntity.ok(
-          listenService.getTests(authService.findByUsername(authentication.getName())).stream()
+          recordsService.getTests(authService.findByUsername(authentication.getName())).stream()
               .map(PatientTestDTO::fromEntity)
               .toList());
     }

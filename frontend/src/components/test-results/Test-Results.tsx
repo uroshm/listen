@@ -89,7 +89,7 @@ const TestResults: React.FC = () => {
     const fetchPatients = async () => {
       try {
         const response = await fetch(
-          'http://localhost:8080/listen/getMyPatients',
+          'http://localhost:8080/listen/records/getMyPatients',
           {
             method: 'GET',
             headers: {
@@ -120,8 +120,8 @@ const TestResults: React.FC = () => {
       try {
         const url =
           selectedPatientId === 'all'
-            ? 'http://localhost:8080/listen/getTests'
-            : `http://localhost:8080/listen/getTests?patientId=${selectedPatientId}`;
+            ? 'http://localhost:8080/listen/records/getTests'
+            : `http://localhost:8080/listen/records/getTests?patientId=${selectedPatientId}`;
 
         const response = await fetch(url, {
           method: 'GET',

@@ -1,4 +1,4 @@
-package com.listen.entity;
+package com.listen.auth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

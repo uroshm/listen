@@ -30,7 +30,7 @@ export const fetchToken = async (): Promise<string | null> => {
 
   try {
     const response = await axios.post<AuthResponse>(
-      'http://localhost:8080/auth/login',
+      'http://localhost:8080/listen/auth/login',
       {
         username: 'user',
         password: 'password123',

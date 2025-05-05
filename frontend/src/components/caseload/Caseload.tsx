@@ -478,7 +478,7 @@ function useCreatePatientInfo() {
         throw new Error('No authentication token found.');
       }
       const response = await fetch(
-        'http://localhost:8080/listen/createPatient',
+        'http://localhost:8080/listen/records/createPatient',
         {
           method: 'POST',
           headers: {
@@ -518,7 +518,7 @@ function useGetPatientInfos() {
     queryKey: ['users'],
     queryFn: async () => {
       const response = await fetch(
-        'http://localhost:8080/listen/getMyPatients',
+        'http://localhost:8080/listen/records/getMyPatients',
         {
           method: 'GET',
           headers: {
@@ -568,7 +568,7 @@ function useUpdatePatientInfo() {
         throw new Error('No authentication token found.');
       }
       const response = await fetch(
-        `http://localhost:8080/listen/editPatient/${patient.id}`,
+        `http://localhost:8080/listen/records/editPatient/${patient.id}`,
         {
           method: 'PUT',
           headers: {

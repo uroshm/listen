@@ -1,7 +1,6 @@
-package com.listen.dto;
+package com.listen.records;
 
-import com.listen.entity.ListenUser;
-import com.listen.entity.Patient;
+import com.listen.auth.ListenUser;
 
 public record PatientDTO(
     Long id,

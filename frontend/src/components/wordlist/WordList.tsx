@@ -131,7 +131,7 @@ const WordList: React.FC<WordListProps> = ({
 
           try {
             const audioResponse = await fetch(
-              'http://localhost:8080/listen/uploadAudio',
+              'http://localhost:8080/listen/transcription/uploadAudio',
               {
                 method: 'POST',
                 headers: {
@@ -140,6 +140,7 @@ const WordList: React.FC<WordListProps> = ({
                 body: payloadAnalyzeSpeech,
               }
             );
+            console.log('Audio response:', JSON.stringify(audioResponse));
 
             if (!audioResponse.ok) {
               throw new Error('Failed to upload audio');
@@ -200,7 +201,7 @@ const WordList: React.FC<WordListProps> = ({
 
             try {
               const createTestResponse = await fetch(
-                'http://localhost:8080/listen/createTest',
+                'http://localhost:8080/listen/records/createTest',
                 {
                   method: 'POST',
                   headers: {

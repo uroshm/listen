@@ -1,6 +1,6 @@
-package com.listen.entity;
+package com.listen.records;
 
-import com.listen.dto.PatientDTO;
+import com.listen.auth.ListenUser;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

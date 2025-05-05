@@ -1,4 +1,4 @@
-package com.listen.services;
+package com.listen.transcription;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,9 +21,8 @@ class TranscriptionServiceTest {
     FileInputStream fileInputStream = new FileInputStream("src/test/resources/helloWorld.wav");
     MultipartFile file =
         new MockMultipartFile("file", "cowOverMoon.wav", "audio/wav", fileInputStream);
-    var transcriptionService = new TranscriptionService();
     var expectedTranscription = "hello world";
-
+    var transcriptionService = new TranscriptionService();
     var result = transcriptionService.transcribeAudio(file, expectedTranscription);
 
     assertNotNull(result);

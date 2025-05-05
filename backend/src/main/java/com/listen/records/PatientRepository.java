@@ -1,12 +1,11 @@
-package com.listen.repositories;
+package com.listen.records;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.listen.entity.ListenUser;
-import com.listen.entity.Patient;
+import com.listen.auth.ListenUser;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {

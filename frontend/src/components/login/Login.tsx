@@ -16,7 +16,9 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const endpoint = isRegistering ? '/auth/register' : '/auth/login';
+      const endpoint = isRegistering
+        ? '/listen/auth/register'
+        : '/listen/auth/login';
       const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: 'POST',
         headers: {
