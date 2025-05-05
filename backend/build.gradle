@@ -9,7 +9,7 @@ group = 'com.listen'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '21'
 }
 
 repositories {
@@ -24,7 +24,11 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    
+
+    // Sphinx
+    implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
+    implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'
+
     // Add Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
