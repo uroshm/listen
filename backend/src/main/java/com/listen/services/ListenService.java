@@ -1,5 +1,6 @@
 package com.listen.services;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import com.listen.entity.Patient;
 import com.listen.entity.PatientTest;
 import com.listen.repositories.PatientRepository;
 import com.listen.repositories.PatientTestRepository;
+import com.listen.services.TranscriptionService.TranscriptionResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,30 @@ public class ListenService {
 
   private final PatientRepository patientRepository;
   private final PatientTestRepository patientTestRepository;
+  private final TranscriptionService transcriptionService;
+
+  public TranscriptionResult uploadAudio(MultipartFile multipartFile, String expectedText) {
+    try {
+      var file = File.createTempFile("tempAudioFile", ".wav");
+      if (!file.exists()) multipartFile.transferTo(file);
+
+      if (file.getFreeSpace() == 0) {
+        log.error("File is empty or not found");
+        return null;
+      }
+      var transcribedText = transcriptionService.transcribeAudio(multipartFile, file.getPath());
+      var result = transcriptionService.getPhonemesFromText(transcribedText);
+
+      if (!file.delete()) {
+        log.warn("Failed to delete temporary file: " + file.getPath());
+      }
+      return new TranscriptionResult(
+          expectedText, result.expectedPhonemes(), result.transcribedPhonemes());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
 
   public List<Patient> getPatientsByUser() {
     return patientRepository.findAll();

@@ -23,6 +23,7 @@ import com.listen.dto.PatientTestDTO;
 import com.listen.entity.ListenUser;
 import com.listen.entity.Patient;
 import com.listen.services.ListenService;
+import com.listen.services.TranscriptionService.TranscriptionResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,14 @@ public class ListenController {
 
   private final ListenService listenService;
   private final AuthService authService;
+
+  @CrossOrigin(origins = "http://localhost:8081")
+  @PostMapping("/uploadAudio")
+  @PreAuthorize("hasAuthority('ROLE_USER')")
+  public TranscriptionResult uploadAudio(
+      @RequestParam("file") MultipartFile file, @RequestParam("expectedText") String expectedText) {
+    return listenService.uploadAudio(file, expectedText);
+  }
 
   @CrossOrigin(origins = "http://localhost:8081")
   @GetMapping("/getMyPatients")

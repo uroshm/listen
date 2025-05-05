@@ -127,11 +127,11 @@ const WordList: React.FC<WordListProps> = ({
 
           const payloadAnalyzeSpeech = new FormData();
           payloadAnalyzeSpeech.append('file', audioBlob, 'recording.wav');
-          payloadAnalyzeSpeech.append('expected_text', expectedWords);
+          payloadAnalyzeSpeech.append('expectedText', expectedWords);
 
           try {
             const audioResponse = await fetch(
-              'http://0.0.0.0:8000/api/speech/analyze/',
+              'http://localhost:8080/listen/uploadAudio',
               {
                 method: 'POST',
                 headers: {
