@@ -1,0 +1,20 @@
+meta {
+  name: getTests
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8080/listen/records/getTests
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/10.3.1
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm9zIiwiaWF0IjoxNzQ2NDkyMTM1LCJleHAiOjE3NDY0OTM5MzV9.XjUTZTeuWioEpTAr5Nx4rbqGfvanFFfTRn7ZAluYToM
+}
