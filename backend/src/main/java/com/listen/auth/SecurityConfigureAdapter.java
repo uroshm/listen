@@ -38,7 +38,10 @@ public class SecurityConfigureAdapter {
     return http.csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/listen/auth/register", "/listen/auth/login")
+                auth.requestMatchers(
+                        "/listen/auth/register",
+                        "/listen/auth/login",
+                        "/listen/transcription/uploadAudio")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

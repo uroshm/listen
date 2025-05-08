@@ -36,6 +36,12 @@ public class TranscriptionService {
       tempFile = File.createTempFile("audio-", ".wav");
       multipartFile.transferTo(tempFile);
 
+      if (!tempFile.exists() || tempFile.length() == 0) {
+        log.error(
+            "Failed to write file - exists: {}, size: {}", tempFile.exists(), tempFile.length());
+        return "Error: Failed to process audio file";
+      }
+
       var recognizer = getRecognizer();
       var processedAudioPath = preprocessAudio(tempFile.getAbsolutePath());
       String transcribedText = getTranscription(processedAudioPath, recognizer);

@@ -16,10 +16,10 @@ headers {
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm9zIiwiaWF0IjoxNzQ2NDkyMTg5LCJleHAiOjE3NDY0OTM5ODl9.NJiVVDmF696wAUkTVtjZtIIweZixjYnOvRvWjvDMvyA
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm9zIiwiaWF0IjoxNzQ2NjQ3MjEyLCJleHAiOjE3NDY2NDkwMTJ9.vzbrtVGh7jehjfQaI3AiE9dqLKjxk4HQcOO2j6KUS4s
 }
 
 body:multipart-form {
-  file: undefined
   expectedText: hello world
+  file: @file(/home/komputer/git/listen/backend/src/test/resources/cowOverMoon.wav)
 }

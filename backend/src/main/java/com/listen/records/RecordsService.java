@@ -1,6 +1,5 @@
 package com.listen.records;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,29 +26,14 @@ public class RecordsService {
 
   public TranscriptionResult uploadAudio(MultipartFile multipartFile, String expectedText) {
     try {
-      var file = File.createTempFile("tempAudioFile", ".wav");
-      if (!file.exists()) multipartFile.transferTo(file);
-
-      if (file.getFreeSpace() == 0) {
-        log.error("File is empty or not found");
-        return null;
-      }
-      var transcribedText = transcriptionService.transcribeAudio(multipartFile, file.getPath());
+      var transcribedText = transcriptionService.transcribeAudio(multipartFile, expectedText);
       var result = transcriptionService.getPhonemesFromText(transcribedText);
-
-      if (!file.delete()) {
-        log.warn("Failed to delete temporary file: " + file.getPath());
-      }
       return new TranscriptionResult(
           expectedText, result.expectedPhonemes(), result.transcribedPhonemes());
     } catch (Exception e) {
       e.printStackTrace();
       return null;
     }
-  }
-
-  public List<Patient> getPatientsByUser() {
-    return patientRepository.findAll();
   }
 
   public List<PatientDTO> getPatientsByUser(ListenUser currentUser) {

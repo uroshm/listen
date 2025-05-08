@@ -1,6 +1,5 @@
 package com.listen.transcription;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,7 @@ public class TranscriptionController {
 
   @CrossOrigin(origins = "http://localhost:8081")
   @PostMapping("/uploadAudio")
-  @PreAuthorize("hasAuthority('ROLE_USER')")
+  // @PreAuthorize("hasAuthority('ROLE_USER')")
   public TranscriptionResult uploadAudio(
       @RequestParam("file") MultipartFile file, @RequestParam("expectedText") String expectedText) {
     return recordsService.uploadAudio(file, expectedText);
