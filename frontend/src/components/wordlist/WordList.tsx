@@ -131,7 +131,7 @@ const WordList: React.FC<WordListProps> = ({
 
           try {
             const audioResponse = await fetch(
-              'http://localhost:8080/listen/transcription/uploadAudio',
+              'http://0.0.0.0:8000/api/speech/analyze/',
               {
                 method: 'POST',
                 headers: {
