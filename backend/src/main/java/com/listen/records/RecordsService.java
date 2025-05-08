@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.listen.auth.ListenUser;
-import com.listen.transcription.TranscriptionService;
-import com.listen.transcription.TranscriptionService.TranscriptionResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +20,6 @@ public class RecordsService {
 
   private final PatientRepository patientRepository;
   private final PatientTestRepository patientTestRepository;
-  private final TranscriptionService transcriptionService;
-
-  public TranscriptionResult uploadAudio(MultipartFile multipartFile, String expectedText) {
-    try {
-      var transcribedText = transcriptionService.transcribeAudio(multipartFile, expectedText);
-      var result = transcriptionService.getPhonemesFromText(transcribedText);
-      return new TranscriptionResult(
-          expectedText, result.expectedPhonemes(), result.transcribedPhonemes());
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
 
   public List<PatientDTO> getPatientsByUser(ListenUser currentUser) {
     return patientRepository.findByUser(currentUser).stream().map(Patient::convertToDTO).toList();

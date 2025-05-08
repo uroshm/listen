@@ -14,20 +14,10 @@ java {
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-    maven {
-        url "https://raw.githubusercontent.com/cmusphinx/sphinx4/master/maven/"
-    }
 }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // Sphinx
-    implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
-    implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'
 
     // Add Lombok
     compileOnly 'org.projectlombok:lombok'
