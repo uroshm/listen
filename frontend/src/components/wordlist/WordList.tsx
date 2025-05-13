@@ -247,36 +247,6 @@ const WordList: React.FC<WordListProps> = ({
           wordPool = [...wordsEndS];
         }
         break;
-
-      case 'r':
-        if (position === 'initial') {
-          wordPool = [...wordsBeginningS];
-        } else if (position === 'medial') {
-          wordPool = [...wordsMiddleS];
-        } else if (position === 'final') {
-          wordPool = [...wordsEndS];
-        }
-        break;
-
-      case 'l':
-        if (position === 'initial') {
-          wordPool = [...wordsBeginningS];
-        } else if (position === 'medial') {
-          wordPool = [...wordsMiddleS];
-        } else if (position === 'final') {
-          wordPool = [...wordsEndS];
-        }
-        break;
-
-      case 'th':
-        if (position === 'initial') {
-          wordPool = [...wordsBeginningS];
-        } else if (position === 'medial') {
-          wordPool = [...wordsMiddleS];
-        } else if (position === 'final') {
-          wordPool = [...wordsEndS];
-        }
-        break;
     }
 
     // Shuffle and select 10 words
@@ -327,7 +297,7 @@ const WordList: React.FC<WordListProps> = ({
       } else {
         mediaRecorder.start();
         setIsRecording(true);
-        setTimeLeft(9);
+        setTimeLeft(10);
 
         timerRef.current = setInterval(() => {
           setTimeLeft((prevTime) => {
